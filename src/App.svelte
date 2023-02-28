@@ -9,7 +9,7 @@
     import {franc, francAll} from "franc";
 
 
-    import {maybe_push} from "./utils.js";
+    import {maybe_push, is_url} from "./utils.js";
 
     const create_promise = () => {
         let resolver;
@@ -65,9 +65,9 @@
         link = link;
     }
 
-
+    // Audio queue.
     const talk_queue = fastq.promise(async (task_item) => {
-        const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt} = task_item;
+        const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt, message_index} = task_item;
         console.log('task_item: ', task_item);
 
         const [promise, resolve] = create_promise();
@@ -82,9 +82,32 @@
         });
         console.log('e: ', e);
 
+
+        let message_fragments = message.split(/\s/gi);
+        console.log('message_fragments before', message_fragments);
+
+        // Modify words.
+        for (let i = 0; i < message_fragments.length; i++) {
+            let message_fragment = message_fragments[i];
+            if (is_url(message_fragment)) {
+                message_fragment = "odkaz";
+            }
+
+            message_fragments[i] = message_fragment;
+        }
+
+        console.log('message_fragments after', message_fragments);
+        const new_message = message_fragments.join(" ");
+        console.log('new_message: ', new_message);
+
+        // Show comparison.
+        if (message !== new_message) {
+            messages[message_index] = `${new_message} (${message})`;
+        }
+
         console.log("zacinam mluvit");
         const lang = "cs-cz";
-        let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(message)}`;
+        let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(new_message)}`;
 
         if (is_aoe_taunt) {
             const url = `/taunts/T_${aoe_taunt}.mp3`;
@@ -253,8 +276,11 @@
         console.log('read_message: ', read_message);
         if (!read_message) return;
 
+        // Messages visual queue.
+        const message_index = messages.length;
         messages.push(message);
         messages = messages;
+        data.message_index = message_index;
 
         // Determine if message is aoe taunt.
         const is_aoe_taunt = (settings.use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
@@ -274,7 +300,7 @@
 
             talk_queue.push({
                 ...data,
-                message: `${username} říká: ${message}`,
+                message: `${username} říká ${message}`,
             });
         }
 

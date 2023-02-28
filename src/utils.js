@@ -15,3 +15,18 @@ export function maybe_push(array, item, limit = 10) {
     array.push(item);
     return array;
 }
+
+/**
+ * Check if string is valid URL.
+ *
+ * @param {string} link
+ * @returns {boolean}
+ */
+export function is_url(link) {
+    try {
+        const url = new URL(link);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
