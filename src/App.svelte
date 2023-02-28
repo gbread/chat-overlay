@@ -315,26 +315,27 @@
     let link = new URL(location);
 </script>
 
+<!-- Settings form. -->
 {#if (Object.keys($router.query).length < 1)}
     <h1>Settings:</h1>
     {#each Object.entries(settings) as [key, value]}
         <div>
             {#if (value === "true" || value === "false")}
+                <!-- Checkbox. -->
                 {key}
                 <input type=checkbox on:change={(event) => {
                     const checked = event.target.checked;
-                    console.log("checked", checked);
 
                     link.searchParams.set(key, checked);
                     link = link;
                 }}>
             {:else if (key !== "blacklist")}
+                <!-- Text input. -->
                 {key}
                 {value}
                 <input type="text" on:input={(event) => {
                     const text = event.target.value;
-                    console.log('event: ', event);
-                    console.log('text: ', text);
+
                     link.searchParams.set(key, text);
                     link = link;
                 }}>
