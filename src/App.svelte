@@ -181,7 +181,7 @@
         if (blacklist.includes(username.toLowerCase())) return;
 
         if (read_subscribers_only === "true") {
-            if (!badges_raw.includes("founder") && !badges_raw.includes("subscriber")) {
+            if (read_vip_users !== "true" && !badges_raw.includes("founder") && !badges_raw.includes("subscriber")) {
                 return;
             }
         }
