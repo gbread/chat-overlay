@@ -278,7 +278,12 @@
             });
         }
 
-        previous_username = username;
+        // Store previous username.
+        if (!is_aoe_taunt) {
+            previous_username = username;
+        } else {
+            previous_username = null;
+        }
     }
 
     function test_message() {
