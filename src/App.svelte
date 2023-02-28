@@ -199,17 +199,18 @@
         if (previous_username === username) {
             talk_queue.push({
                 ...data,
-                message: `${username} říká: ${message}`
+                message
             });
         } else {
-            previous_username = username;
 
             talk_queue.push({
                 ...data,
-                message
+                message,
+                message: `${username} říká: ${message}`
             });
         }
 
+        previous_username = username;
     }
 
 </script>
