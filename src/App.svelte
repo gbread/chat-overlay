@@ -155,7 +155,7 @@
         console.log('read_vip_users: ', read_vip_users);
 
         // AoE taunts.
-        read_vip_users = url?.searchParams?.get("aoe-taunts");
+        use_aoe_taunts = url?.searchParams?.get("use-aoe-taunts");
         console.log('read_vip_users: ', read_vip_users);
 
         client = new tmi.Client({
