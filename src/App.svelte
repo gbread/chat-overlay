@@ -215,9 +215,9 @@
             "user-type": user_type,
             username,
         } = data;
-        const is_vip = badges["vip"];
-        const is_broadcaster = badges["broadcaster"];
-        const sent_bits = badges["bits"];
+        const is_vip = badges?.vip ?? false;
+        const is_broadcaster = badges?.broadcaster ?? false;
+        const sent_bits = badges?.bits ?? false;
 
         // Skip same message and sent less than 1 minutes ago.
         // TODO:
