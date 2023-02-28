@@ -195,7 +195,10 @@
 
         console.log("data:", data, "message: ", message);
 
+        // Skip command.
         if (message.startsWith("!")) return;
+
+        // Skip blacklisted usernames.
         if (blacklist.includes(username.toLowerCase())) return;
 
         if (read_subscribers_only === "true") {
