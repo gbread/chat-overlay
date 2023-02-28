@@ -113,6 +113,7 @@
     let messages = [];
     let message = "";
     let volume = [localStorage.getItem("volume") || 1];
+    let previous_username = null;
     const languages = [
         "eng",
         "ces",
@@ -195,10 +196,20 @@
         messages.push(message);
         messages = messages;
 
-        talk_queue.push({
-            ...data,
-            message
-        });
+        if (previous_username === username) {
+            talk_queue.push({
+                ...data,
+                message: `${username} říká: ${message}`
+            });
+        } else {
+            previous_username = username;
+
+            talk_queue.push({
+                ...data,
+                message
+            });
+        }
+
     }
 
 </script>
