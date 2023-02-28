@@ -249,7 +249,7 @@
 
     <br>
 
-    <div style="max-width: 350px;">
+    <div class="max-width">
         <RangeSlider min={0} max={1} step={0.01} pips hoverable all="label" float pipstep={10} bind:values={volume} on:change={() => {
             localStorage.setItem("volume", volume);
         }} />
@@ -275,3 +275,8 @@
     {/if}
 {/if}
 
+<style>
+    .max-width {
+        max-width: 350px;
+    }
+</style>
