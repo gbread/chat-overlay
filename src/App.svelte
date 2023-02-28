@@ -24,7 +24,7 @@
     ];
 
     const talk_queue = fastq.promise(async (task_item) => {
-        const {message, "badge-info": badge_info, badges, color, } = task_item;
+        const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt} = task_item;
         console.log('task_item: ', task_item);
 
         const [promise, resolve] = create_promise();
@@ -43,8 +43,8 @@
         const lang = "cs-cz";
         let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(message)}`;
 
-        if (use_aoe_taunts === "true" && Number(message.trim()) == message.trim()) {
-            audio_src = `/taunts/T_${message.trim()}.mp3`;
+        if (is_aoe_taunt) {
+            audio_src = `/taunts/T_${aoe_taunt}.mp3`;
             console.log('audio_src: ', audio_src);
         }
 
@@ -206,17 +206,24 @@
         messages.push(message);
         messages = messages;
 
+        const is_aoe_taunt = (use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
+        data.is_aoe_taunt = is_aoe_taunt;
+        const aoe_taunt = message.trim();
+
         if (previous_username === username) {
             talk_queue.push({
                 ...data,
-                message
+                message,
+                is_aoe_taunt,
+                aoe_taunt,
             });
         } else {
 
             talk_queue.push({
                 ...data,
-                message,
-                message: `${username} říká: ${message}`
+                message: `${username} říká: ${message}`,
+                is_aoe_taunt,
+                aoe_taunt,
             });
         }
 
