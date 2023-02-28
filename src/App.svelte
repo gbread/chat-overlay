@@ -176,6 +176,8 @@
             username,
         } = data;
 
+        console.log("data:", data, "message: ", message);
+
         if (blacklist.includes(username.toLowerCase())) return;
 
         if (read_subscribers_only === "true") {
