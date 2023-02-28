@@ -273,7 +273,7 @@
     {/if}
 
     {#if (messages.length > 0)}
-        <h1>{messages.length} messages:</h1>
+        <h1>({messages.length}) Message queue:</h1>
         <ul>
             {#each messages as message}
                 <li>{message}</li>
