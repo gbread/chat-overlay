@@ -44,8 +44,12 @@
         let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(message)}`;
 
         if (is_aoe_taunt) {
-            audio_src = `/taunts/T_${aoe_taunt}.mp3`;
+            const url = `/taunts/T_${aoe_taunt}.mp3`;
             console.log('audio_src: ', audio_src);
+            const response = await fetch(url, {method: "HEAD"});
+            if (response.ok && response.status !== 404) {
+                audio_src = url;
+            }
         }
 
         try {
