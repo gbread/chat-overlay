@@ -189,6 +189,7 @@
             color,
             "display-name": display_name,
             emotes,
+            "emotes-raw": emotes_raw,
             "message-type": message_type,
             mod: is_mod,
             subscriber: is_subscriber,
@@ -244,15 +245,52 @@
         previous_username = username;
     }
 
+    function test_message() {
+        const badge_info = {
+            subscriber: "1",
+        }
+        const badges = {
+            ...badge_info,
+            broadcaster: "1",
+        }
+        //const badges_raw = "subscriber/1";
+        const badges_raw = "broadcaster/1,subscriber/1";
+        //const badges_raw = "vip/1,no_video/1";
+        const color = "#008000";
+        const emotes = null;
+        const emotes_raw = null;
+        const message_type = "chat";
+        const display_name = "Tester";
+        const is_mod = false;
+        const is_subscriber = true;
+        const user_id = "160298966";
+        const user_type = null;
+        const username = "tester";
+
+        const data = {
+            "badge-info": badge_info,
+            badges,
+            "badges-raw": badges_raw,
+            color,
+            "display-name": display_name,
+            emotes,
+            emotes_raw,
+            "message-type": message_type,
+            mod: is_mod,
+            subscriber: is_subscriber,
+            "user-id": user_id,
+            "user-type": user_type,
+            username,
+        };
+
+        parse_message("", data, message);
+    }
+
 </script>
 
 {#if (hide_chat !== "true")}
     <input type="text" bind:value={message}>
-    <button on:click={() => {
-        messages.push(message);
-        messages = messages;
-        talk_queue.push({message});
-    }}>mluvit</button>
+    <button on:click={test_message}>promluvit</button>
 
     <br>
 
