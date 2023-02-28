@@ -122,6 +122,7 @@
     let client;
 
     let hide_chat = false;
+    let read_subscribers_only;
     onMount(() => {
         const url = new URL(location);
 
@@ -136,6 +137,10 @@
         // Hide chat.
         hide_chat = url?.searchParams?.get("hide-chat");
         console.log('hide_chat: ', hide_chat);
+
+        // Hide chat.
+        const read_subscribers_only = url?.searchParams?.get("read-subscribers-only");
+        console.log('read_subscribers_only: ', read_subscribers_only);
 
         client = new tmi.Client({
             channels: [channel],
@@ -154,6 +159,7 @@
         const {
             "badge-info": badge_info,
             badges,
+            "badges-raw": badges_raw,
             color,
             "display-name": display_name,
             emotes,
@@ -166,6 +172,12 @@
         } = data;
 
         if (blacklist.includes(username.toLowerCase())) return;
+
+        if (read_subscribers_only === "true") {
+            if (!badges_raw.includes("founder") && !badges_raw.includes("subscriber")) {
+                return;
+            }
+        }
 
         messages.push(message);
         messages = messages;
