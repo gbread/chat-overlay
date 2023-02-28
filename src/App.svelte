@@ -1,11 +1,13 @@
 <script>
     import {onMount} from "svelte";
 
+    import {router} from "tinro";
+    import RangeSlider from "svelte-range-slider-pips";
+
     import fastq from "fastq";
     import tmi from "tmi.js";
     import {franc, francAll} from "franc";
 
-    import RangeSlider from "svelte-range-slider-pips";
 
     import {maybe_push} from "./utils.js";
 
@@ -19,11 +21,40 @@
         ];
     }
 
-    const blacklist = [
-        "streamelements",
-        "nightbot",
-        "soundalerts",
-    ];
+    // Settings.
+    const settings = {
+        blacklist: [
+            "streamelements",
+            "nightbot",
+            "soundalerts",
+        ],
+        channel: "",
+        hide_chat: "false",
+        use_tts: "true",
+        read_subscribers: "true",
+        read_nonsubscribers: "false",
+        read_vip_users: "true",
+        use_aoe_taunts: "false",
+    };
+
+    function set_settings() {
+        // Possible url parameters to override settings.
+        const possible_settings = Object.keys(settings);
+
+        console.log("query", $router.query);
+        // Apply found url parameters to settings.
+        for (let possible_setting of possible_settings) {
+            const setting_value = $router.query[possible_setting];
+            console.log(possible_setting, 'setting_value: ', setting_value);
+
+            // Store setting value.
+            if (setting_value) {
+                settings[possible_setting] = setting_value;
+            }
+        }
+        console.log("after", JSON.stringify({settings}, null, 2));
+    }
+
 
     const talk_queue = fastq.promise(async (task_item) => {
         const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt} = task_item;
@@ -137,54 +168,31 @@
 
     let client;
 
-    let hide_chat = "false";
-    let read_subscribers_only;
-    let read_vip_users = "true";
-    let use_aoe_taunts = "false";
     onMount(async () => {
-        const url = new URL(location);
+        set_settings();
 
-        // Use TTS.
-        const use_tts = url?.searchParams?.get("use-tts");
-        console.log('use_tts: ', use_tts);
-
-        // Channel.
-        const channel = url?.searchParams?.get("channel");
-        console.log('channel: ', channel);
-
-        // Hide chat.
-        hide_chat = url?.searchParams?.get("hide-chat");
-        console.log('hide_chat: ', hide_chat);
-
-        // Read subscribers only.
-        read_subscribers_only = url?.searchParams?.get("read-subscribers-only");
-        console.log('read_subscribers_only: ', read_subscribers_only);
-
-        // Read vip users.
-        read_vip_users = url?.searchParams?.get("read-vip-users");
-        console.log('read_vip_users: ', read_vip_users);
-
-        // AoE taunts.
-        use_aoe_taunts = url?.searchParams?.get("use-aoe-taunts");
-        console.log('read_vip_users: ', read_vip_users);
+        // Channel is required.
+        if (!settings.channel) return;
 
         client = new tmi.Client({
-            channels: [channel],
+            channels: [settings.channel],
         });
 
         await client.connect();
         console.log("connected!");
 
-        if (use_tts === "true") {
-            console.log("do it");
+        if (settings.use_tts === "true") {
+            console.log("Listening to messages");
             client.on("message", parse_message);
         }
     });
 
     function parse_message(channel, data, message, is_self) {
+        console.log("data:", data, "message: ", message);
+
         const {
             "badge-info": badge_info,
-            badges,
+            badges = {},
             "badges-raw": badges_raw,
             color,
             "display-name": display_name,
@@ -197,48 +205,66 @@
             "user-type": user_type,
             username,
         } = data;
+        const is_vip = badges["vip"];
+        const is_broadcaster = badges["broadcaster"];
+        const sent_bits = badges["bits"];
 
-        console.log("data:", data, "message: ", message);
+        // Skip same message and sent less than 1 minutes ago.
+        // TODO:
 
         // Skip command.
         if (message.startsWith("!")) return;
 
         // Skip blacklisted usernames.
-        if (blacklist.includes(username.toLowerCase())) return;
+        if (settings.blacklist.includes(username.toLowerCase())) return;
 
-        if (read_subscribers_only === "true") {
-            if (read_vip_users !== "true" && !badges_raw.includes("founder") && !badges_raw.includes("subscriber")) {
+        let read_message = false;
+
+        // Determine if to read
+        (() => {
+            if (settings.read_vip_users === "true" && is_vip) {
+                read_message = true;
                 return;
             }
-        }
 
-        if (read_vip_users !== "true") {
-            if (badges_raw.includes("vip")) {
+            if (settings.read_subscribers === "true" && is_subscriber) {
+                read_message = true;
                 return;
             }
-        }
+
+            if (settings.read_nonsubscribers === "true" && !is_subscriber) {
+                read_message = true;
+                return;
+            }
+
+        })();
+
+        // Maybe bail out.
+        console.log('read_message: ', read_message);
+        if (!read_message) return;
 
         messages.push(message);
         messages = messages;
 
-        const is_aoe_taunt = (use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
+        // Determine if message is aoe taunt.
+        const is_aoe_taunt = (settings.use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
+        console.log('is_aoe_taunt: ', is_aoe_taunt);
         data.is_aoe_taunt = is_aoe_taunt;
-        const aoe_taunt = message.trim();
+        data.aoe_taunt = message.trim();
+
+        // TODO: split messages length
+        // TODO: url přečti jako "odkaz" nebo "link"
 
         if (previous_username === username) {
             talk_queue.push({
                 ...data,
                 message,
-                is_aoe_taunt,
-                aoe_taunt,
             });
         } else {
 
             talk_queue.push({
                 ...data,
                 message: `${username} říká: ${message}`,
-                is_aoe_taunt,
-                aoe_taunt,
             });
         }
 
@@ -286,9 +312,43 @@
         parse_message("", data, message);
     }
 
+    let link = new URL(location);
 </script>
 
-{#if (hide_chat !== "true")}
+{#if (Object.keys($router.query).length < 1)}
+    <h1>Settings:</h1>
+    {#each Object.entries(settings) as [key, value]}
+        <div>
+            {#if (value === "true" || value === "false")}
+                {key}
+                <input type=checkbox on:change={(event) => {
+                    const checked = event.target.checked;
+                    console.log("checked", checked);
+
+                    link.searchParams.set(key, checked);
+                    link = link;
+                }}>
+            {:else if (key !== "blacklist")}
+                {key}
+                {value}
+                <input type="text" on:input={(event) => {
+                    const text = event.target.value;
+                    console.log('event: ', event);
+                    console.log('text: ', text);
+                    link.searchParams.set(key, text);
+                    link = link;
+                }}>
+            {/if}
+        </div>
+    {/each}
+
+    <br>
+    <strong>URL link:</strong>
+    <pre>{link}</pre>
+    <br>
+{/if}
+
+{#if (settings.hide_chat !== "true")}
     <input type="text" bind:value={message}>
     <button on:click={test_message}>promluvit</button>
 
