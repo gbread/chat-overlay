@@ -189,6 +189,7 @@
 
         console.log("data:", data, "message: ", message);
 
+        if (message.startsWith("!")) return;
         if (blacklist.includes(username.toLowerCase())) return;
 
         if (read_subscribers_only === "true") {
