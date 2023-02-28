@@ -75,7 +75,7 @@
                 console.log('duration_mils: ', duration_mils);
                 audio.play().catch((error) => {
                     console.error("NO PLAY! ", error);
-                    errors.push(error);
+                    errors = maybe_push(errors, error, 5);
                     resolve();
                 });
 
@@ -85,7 +85,6 @@
                 resolve();
             }
 
-            console.log("try start");
             audio.volume = volume[0];
             audio.addEventListener("loadedmetadata", async () => {
                 const duration = audio.duration;
@@ -95,18 +94,23 @@
                 if (duration === Infinity) {
                     audio.currentTime = 1e101;
                     audio.addEventListener("timeupdate", fix_duration);
-                    console.log("konec vole");
+                    console.error("Infinity bug");
                     return;
                 }
 
                 play_audio(duration);
             });
-            console.log("try end");
+
+            audio.addEventListener("error", (error) => {
+                console.error("Audio error:", error);
+                errors = maybe_push(errors, "Audio error", 5);
+                resolve();
+            });
+
         } catch (error) {
             resolve();
             console.log("ERRRROROR", error);
-            errors.push(error);
-            errors = errors;
+            errors = maybe_push(errors, error, 5);
         }
 
         await promise;
