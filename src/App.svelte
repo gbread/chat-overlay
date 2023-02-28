@@ -137,7 +137,7 @@
     let read_subscribers_only;
     let read_vip_users = "true";
     let use_aoe_taunts = "false";
-    onMount(() => {
+    onMount(async () => {
         const url = new URL(location);
 
         // Use TTS.
@@ -168,7 +168,7 @@
             channels: [channel],
         });
 
-        client.connect();
+        await client.connect();
         console.log("connected!");
 
         if (use_tts === "true") {
