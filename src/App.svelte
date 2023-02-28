@@ -121,8 +121,9 @@
 
     let client;
 
-    let hide_chat = false;
+    let hide_chat = "false";
     let read_subscribers_only;
+    let read_vip_users = "true";
     onMount(() => {
         const url = new URL(location);
 
@@ -141,6 +142,10 @@
         // Hide chat.
         read_subscribers_only = url?.searchParams?.get("read-subscribers-only");
         console.log('read_subscribers_only: ', read_subscribers_only);
+
+        // Hide chat.
+        read_vip_users = url?.searchParams?.get("read-vip-users");
+        console.log('read_vip_users: ', read_vip_users);
 
         client = new tmi.Client({
             channels: [channel],
@@ -175,6 +180,12 @@
 
         if (read_subscribers_only === "true") {
             if (!badges_raw.includes("founder") && !badges_raw.includes("subscriber")) {
+                return;
+            }
+        }
+
+        if (read_vip_users !== "true") {
+            if (badges_raw.includes("vip")) {
                 return;
             }
         }
