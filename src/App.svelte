@@ -260,7 +260,7 @@
     <h1>Volume: {volume[0]}</h1>
 
     {#if (errors.length > 0)}
-        <h1>{errors.length} errors:</h1>
+        <h1>{errors.length} last errors:</h1>
         <ul>
             {#each errors as error}
                 <li>{error}</li>
