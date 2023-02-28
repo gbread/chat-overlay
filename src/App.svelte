@@ -139,7 +139,7 @@
         console.log('hide_chat: ', hide_chat);
 
         // Hide chat.
-        const read_subscribers_only = url?.searchParams?.get("read-subscribers-only");
+        read_subscribers_only = url?.searchParams?.get("read-subscribers-only");
         console.log('read_subscribers_only: ', read_subscribers_only);
 
         client = new tmi.Client({
