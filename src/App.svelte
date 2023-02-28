@@ -41,7 +41,12 @@
 
         console.log("zacinam mluvit");
         const lang = "cs-cz";
-        const audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(message)}`;
+        let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(message)}`;
+
+        if (use_aoe_taunts === "true" && Number(message.trim()) == message.trim()) {
+            audio_src = `/taunts/T_${message.trim()}.mp3`;
+            console.log('audio_src: ', audio_src);
+        }
 
         try {
             const audio = new Audio(audio_src);
@@ -125,6 +130,7 @@
     let hide_chat = "false";
     let read_subscribers_only;
     let read_vip_users = "true";
+    let use_aoe_taunts = "false";
     onMount(() => {
         const url = new URL(location);
 
@@ -140,12 +146,16 @@
         hide_chat = url?.searchParams?.get("hide-chat");
         console.log('hide_chat: ', hide_chat);
 
-        // Hide chat.
+        // Read subscribers only.
         read_subscribers_only = url?.searchParams?.get("read-subscribers-only");
         console.log('read_subscribers_only: ', read_subscribers_only);
 
-        // Hide chat.
+        // Read vip users.
         read_vip_users = url?.searchParams?.get("read-vip-users");
+        console.log('read_vip_users: ', read_vip_users);
+
+        // AoE taunts.
+        read_vip_users = url?.searchParams?.get("aoe-taunts");
         console.log('read_vip_users: ', read_vip_users);
 
         client = new tmi.Client({
