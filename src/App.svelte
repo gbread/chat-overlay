@@ -396,6 +396,10 @@
 {/if}
 
 <style>
+    :global(body) {
+        background-color: #fff;
+    }
+
     .max-width {
         max-width: 350px;
     }
