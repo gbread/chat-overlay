@@ -31,11 +31,14 @@
         channel: "",
         hide_chat: "false",
         use_tts: "true",
+        read_broadcaster: "true",
+        read_vip_users: "true",
         read_subscribers: "true",
         read_nonsubscribers: "false",
-        read_vip_users: "true",
         use_aoe_taunts: "false",
     };
+
+    let link = new URL(location);
 
     function set_settings() {
         // Possible url parameters to override settings.
@@ -53,6 +56,13 @@
             }
         }
         console.log("after", JSON.stringify({settings}, null, 2));
+
+        // Update link.
+        for (const [key, value] of Object.entries(settings)) {
+            if (key === "blacklist") continue;
+            link.searchParams.set(key, value);
+        }
+        link = link;
     }
 
 
@@ -312,7 +322,6 @@
         parse_message("", data, message);
     }
 
-    let link = new URL(location);
 </script>
 
 <!-- Settings form. -->
@@ -323,7 +332,7 @@
             {#if (value === "true" || value === "false")}
                 <!-- Checkbox. -->
                 {key}
-                <input type=checkbox on:change={(event) => {
+                <input type=checkbox checked={value === "true"} on:change={(event) => {
                     const checked = event.target.checked;
 
                     link.searchParams.set(key, checked);
