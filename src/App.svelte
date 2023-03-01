@@ -90,10 +90,13 @@
         for (let i = 0; i < message_fragments.length; i++) {
             let message_fragment = message_fragments[i];
 
-            // URLs.
-            if (is_url(message_fragment)) {
-                message_fragment = "odkaz";
-            }
+            (() => {
+                // URLs.
+                if (is_url(message_fragment)) {
+                    message_fragment = "odkaz";
+                    return;
+                }
+            })();
 
             message_fragments[i] = message_fragment;
         }
