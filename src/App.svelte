@@ -67,7 +67,7 @@
 
     // Audio queue.
     const talk_queue = fastq.promise(async (task_item) => {
-        const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt, message_index} = task_item;
+        const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt, message_id} = task_item;
         console.log('task_item: ', task_item);
 
         const [promise, resolve] = create_promise();
@@ -89,6 +89,8 @@
         // Modify words.
         for (let i = 0; i < message_fragments.length; i++) {
             let message_fragment = message_fragments[i];
+
+            // URLs.
             if (is_url(message_fragment)) {
                 message_fragment = "odkaz";
             }
@@ -102,7 +104,11 @@
 
         // Show comparison.
         if (message !== new_message) {
-            messages[message_index] = `${new_message} (${message})`;
+            const message_index = messages.findIndex((m) => m.id === message_id);
+            if (message_index >= 0) {
+                messages[message_index].text = `${new_message} (${message})`;
+                messages = messages;
+            }
         }
 
         console.log("zacinam mluvit");
@@ -277,10 +283,13 @@
         if (!read_message) return;
 
         // Messages visual queue.
-        const message_index = messages.length;
-        messages.push(message);
+        const message_id = crypto.randomUUID();
+        messages.push({
+            id: message_id,
+            text: message,
+        });
         messages = messages;
-        data.message_index = message_index;
+        data.message_id = message_id;
 
         // Determine if message is aoe taunt.
         const is_aoe_taunt = (settings.use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
@@ -289,7 +298,6 @@
         data.aoe_taunt = message.trim();
 
         // TODO: split messages length
-        // TODO: url přečti jako "odkaz" nebo "link"
 
         if (previous_username === username) {
             talk_queue.push({
@@ -415,7 +423,7 @@
         <h1>({messages.length}) Message queue:</h1>
         <ul>
             {#each messages as message}
-                <li>{message}</li>
+                <li>{message.text}</li>
             {/each}
         </ul>
     {/if}
