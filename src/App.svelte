@@ -96,6 +96,10 @@
                     message_fragment = "odkaz";
                     return;
                 }
+
+                // Improve speaking.
+                message_fragment = message_fragment.replace("_", " ");
+                message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
             })();
 
             message_fragments[i] = message_fragment;
