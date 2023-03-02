@@ -97,9 +97,14 @@
                     return;
                 }
 
-                // Improve speaking.
+                // Remove underscores.
                 message_fragment = message_fragment.replaceAll("_", " ");
+
+                // Add space before number.
                 message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
+
+                // Remove Emojis.
+                message_fragment = message_fragment.replaceAll(/\p{Emoji}/ug, "");
             })();
 
             message_fragments[i] = message_fragment;
