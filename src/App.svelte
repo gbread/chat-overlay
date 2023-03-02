@@ -201,6 +201,12 @@
         messages = messages;
     }, 1);
 
+    talk_queue.error((error, task_item) => {
+        if (!error) return;
+
+        console.error("Queue error:", error);
+    });
+
     let errors = [];
     let messages = [];
     let message = "";
