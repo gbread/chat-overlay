@@ -35,6 +35,9 @@
         read_vip_users: "true",
         read_subscribers: "true",
         read_nonsubscribers: "false",
+        remove_twitch_emotes: "true",
+        skip_emote_only_messages: "true",
+        say_names: "true",
         use_aoe_taunts: "false",
     };
 
@@ -67,10 +70,17 @@
 
     // Audio queue.
     const talk_queue = fastq.promise(async (task_item) => {
-        const {message, "badge-info": badge_info, badges, color, is_aoe_taunt, aoe_taunt, message_id} = task_item;
+        const {"badge-info": badge_info, badges, color, "emote-only": is_emote_only, emotes, is_aoe_taunt, aoe_taunt, say_name, message_id, username} = task_item;
+        let {message} = task_item;
         console.log('task_item: ', task_item);
 
         const [promise, resolve] = create_promise();
+
+        const bail_out = () => {
+            resolve();
+            messages.shift();
+            messages = messages;
+        };
 
         const ee = francAll(message, {
             only: languages,
@@ -82,6 +92,22 @@
         });
         console.log('e: ', e);
 
+        if (settings.skip_emote_only_messages && is_emote_only) return bail_out();
+
+        console.log("message before:", message);
+
+        // Remove all Twitch emotes.
+        if (settings.remove_twitch_emotes && emotes) {
+            const character_to_remove = "|";
+            for (const coordinates of Object.values(emotes)) {
+                coordinates.forEach((coordinate) => {
+                    const [from, to] = coordinate.split("-");
+                    const coordinates_regex = new RegExp(`(?<=^.{${from}}).{${to-from+1}}`, "g");
+                    message = message.replace(coordinates_regex, character_to_remove.repeat(to - from + 1));
+                });
+            }
+            message = message.replaceAll(character_to_remove, "");
+        }
 
         let message_fragments = message.split(/\s/gi);
         console.log('message_fragments before', message_fragments);
@@ -111,8 +137,19 @@
         }
 
         console.log('message_fragments after', message_fragments);
-        const new_message = message_fragments.join(" ");
+        let new_message = message_fragments.join(" ");
         console.log('new_message: ', new_message);
+
+        // Skip empty messages.
+        if (new_message.trim().length < 1) {
+            console.log("Empty message detected");
+            return bail_out();
+        }
+
+        // Say name.
+        if (settings.say_names && say_name) {
+            new_message = `${username} říká ${new_message}`;
+        }
 
         // Show comparison.
         if (message !== new_message) {
@@ -127,9 +164,12 @@
         const lang = "cs-cz";
         let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(new_message)}`;
 
+        // Play AoE taunt.
         if (is_aoe_taunt) {
-            const url = `/taunts/T_${aoe_taunt}.mp3`;
+            const url = `/taunts/T_${message.trim()}.mp3`;
             console.log('audio_src: ', audio_src);
+
+            // Check for file.
             const response = await fetch(url, {method: "HEAD"});
             if (response.ok && response.status !== 404) {
                 audio_src = url;
@@ -253,6 +293,7 @@
             "badges-raw": badges_raw,
             color,
             "display-name": display_name,
+            "emote-only": is_emote_only,
             emotes,
             "emotes-raw": emotes_raw,
             "message-type": message_type,
@@ -265,6 +306,7 @@
         const is_vip = badges?.vip ?? false;
         const is_broadcaster = badges?.broadcaster ?? false;
         const sent_bits = badges?.bits ?? false;
+        const has_no_video = badges?.no_video ?? false;
 
         // Skip same message and sent less than 1 minutes ago.
         // TODO:
@@ -318,22 +360,21 @@
         const is_aoe_taunt = (settings.use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
         console.log('is_aoe_taunt: ', is_aoe_taunt);
         data.is_aoe_taunt = is_aoe_taunt;
-        data.aoe_taunt = message.trim();
 
         // TODO: split messages length
 
-        if (previous_username === username) {
-            talk_queue.push({
-                ...data,
-                message,
-            });
+        // Say name of non consecutive username.
+        if (previous_username !== username) {
+            data.say_name = true;
         } else {
-
-            talk_queue.push({
-                ...data,
-                message: `${username} říká ${message}`,
-            });
+            data.say_name = false;
         }
+
+        // Push to talking queue.
+        talk_queue.push({
+            ...data,
+            message,
+        });
 
         // Store previous username.
         if (!is_aoe_taunt) {
