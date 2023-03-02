@@ -26,6 +26,7 @@
             "streamelements",
             "nightbot",
             "soundalerts",
+            "spectatordashboard",
         ],
         channel: "",
         hide_chat: "false",
