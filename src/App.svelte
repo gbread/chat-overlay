@@ -112,6 +112,8 @@
         let message_fragments = message.split(/\s/gi);
         console.log('message_fragments before', message_fragments);
 
+        const link_text = "odkaz";
+
         // Modify words.
         for (let i = 0; i < message_fragments.length; i++) {
             let message_fragment = message_fragments[i];
@@ -119,7 +121,7 @@
             (() => {
                 // URLs.
                 if (is_url(message_fragment)) {
-                    message_fragment = "odkaz";
+                    message_fragment = link_text;
                     return;
                 }
 
@@ -147,7 +149,9 @@
         }
 
         // Say name.
-        if (settings.say_names && say_name) {
+        if (message_fragments.length === 1 && new_message === link_text) {
+            new_message = `${username} posílá ${link_text}`;
+        } else if (settings.say_names && say_name) {
             new_message = `${username} říká ${new_message}`;
         }
 
