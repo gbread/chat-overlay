@@ -23,10 +23,5 @@ export function maybe_push(array, item, limit = 10) {
  * @returns {boolean}
  */
 export function is_url(link) {
-    try {
-        const url = new URL(link);
-        return true;
-    } catch (error) {
-        return false;
-    }
+    return Array.isArray(link.match(/(((https?:\/\/)|(www\.))[^\s]+)/gi));
 }
