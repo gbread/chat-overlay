@@ -8,7 +8,7 @@
     import tmi from "tmi.js";
     import {franc, francAll} from "franc";
 
-
+    import emoji_regex from "emoji-regex";
     import {maybe_push, is_url} from "./utils.js";
 
     const create_promise = () => {
@@ -130,7 +130,7 @@
                 message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
 
                 // Remove Emojis.
-                message_fragment = message_fragment.replaceAll(/\p{Emoji}/ug, "");
+                message_fragment = message_fragment.replace(emoji_regex(), "");
             })();
 
             message_fragments[i] = message_fragment;

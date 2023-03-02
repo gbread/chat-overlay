@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "dayjs": "^1.11.7",
+        "emoji-regex": "^10.2.1",
         "fastq": "^1.15.0",
         "franc": "^6.1.0",
         "tinro": "^0.6.12",
