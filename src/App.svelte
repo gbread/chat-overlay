@@ -98,7 +98,7 @@
                 }
 
                 // Improve speaking.
-                message_fragment = message_fragment.replace("_", " ");
+                message_fragment = message_fragment.replaceAll("_", " ");
                 message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
             })();
 
