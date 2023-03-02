@@ -8,8 +8,7 @@
     import tmi from "tmi.js";
     import {franc, francAll} from "franc";
 
-    import emoji_regex from "emoji-regex";
-    import {maybe_push, is_url} from "./utils.js";
+    import {maybe_push, modify_words} from "./utils.js";
 
     const create_promise = () => {
         let resolver;
@@ -109,37 +108,9 @@
             message = message.replaceAll(character_to_remove, "");
         }
 
-        let message_fragments = message.split(/\s/gi);
-        console.log('message_fragments before', message_fragments);
-
         const link_text = "odkaz";
 
-        // Modify words.
-        for (let i = 0; i < message_fragments.length; i++) {
-            let message_fragment = message_fragments[i];
-
-            (() => {
-                // URLs.
-                if (is_url(message_fragment)) {
-                    message_fragment = link_text;
-                    return;
-                }
-
-                // Remove underscores.
-                message_fragment = message_fragment.replaceAll("_", " ");
-
-                // Add space before number.
-                message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
-
-                // Remove Emojis.
-                message_fragment = message_fragment.replace(emoji_regex(), "");
-            })();
-
-            message_fragments[i] = message_fragment;
-        }
-
-        console.log('message_fragments after', message_fragments);
-        let new_message = message_fragments.join(" ");
+        let new_message = modify_words(message, link_text);
         console.log('new_message: ', new_message);
 
         // Skip empty messages.
@@ -148,11 +119,13 @@
             return bail_out();
         }
 
+        const new_username = modify_words(username, link_text);
+
         // Say name.
-        if (message_fragments.length === 1 && new_message === link_text) {
-            new_message = `${username} posílá ${link_text}`;
+        if (new_message === link_text) {
+            new_message = `${new_username} posílá ${link_text}`;
         } else if (settings.say_names && say_name) {
-            new_message = `${username} říká ${new_message}`;
+            new_message = `${new_username} říká ${new_message}`;
         }
 
         // Show comparison.
