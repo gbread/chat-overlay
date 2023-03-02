@@ -279,6 +279,11 @@
 
         // Determine if to read
         (() => {
+            if (settings.read_broadcaster === "true" && is_broadcaster) {
+                read_message = true;
+                return;
+            }
+
             if (settings.read_vip_users === "true" && is_vip) {
                 read_message = true;
                 return;
