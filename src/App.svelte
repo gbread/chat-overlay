@@ -70,7 +70,7 @@
 
     // Audio queue.
     const talk_queue = fastq.promise(async (task_item) => {
-        const {"badge-info": badge_info, badges, color, "emote-only": is_emote_only, emotes, is_aoe_taunt, aoe_taunt, say_name, message_id, username} = task_item;
+        const {"badge-info": badge_info, badges, color, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, username} = task_item;
         let {message} = task_item;
         console.log('task_item: ', task_item);
 
@@ -274,6 +274,7 @@
             "emote-only": is_emote_only,
             emotes,
             "emotes-raw": emotes_raw,
+            id: message_id,
             "message-type": message_type,
             mod: is_mod,
             subscriber: is_subscriber,
@@ -326,13 +327,11 @@
         if (!read_message) return;
 
         // Messages visual queue.
-        const message_id = crypto.randomUUID();
         messages.push({
             id: message_id,
             text: message,
         });
         messages = messages;
-        data.message_id = message_id;
 
         // Determine if message is aoe taunt.
         const is_aoe_taunt = (settings.use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
@@ -376,6 +375,7 @@
         const color = "#008000";
         const emotes = null;
         const emotes_raw = null;
+        const message_id = crypto.randomUUID();
         const message_type = "chat";
         const display_name = "Tester";
         const is_mod = false;
@@ -392,6 +392,7 @@
             "display-name": display_name,
             emotes,
             emotes_raw,
+            id: message_id,
             "message-type": message_type,
             mod: is_mod,
             subscriber: is_subscriber,
