@@ -14,6 +14,7 @@
     const settings = {
         blacklist: [
             "streamelements",
+            "streamlabs",
             "nightbot",
             "soundalerts",
             "spectatordashboard",
