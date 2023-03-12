@@ -42,7 +42,7 @@ export function modify_words(message, link_text) {
             message_fragment = message_fragment.replace(emoji_regex(), "");
         })();
 
-        message_fragments[i] = message_fragment;
+        message_fragments[i] = message_fragment.toLowerCase();
     }
 
     console.log("message_fragments after", message_fragments);
