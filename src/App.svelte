@@ -147,54 +147,39 @@
 
         try {
             const audio = new Audio(audio_src);
-            function fix_duration() {
-                audio.currentTime = 0;
-                audio.removeEventListener('timeupdate', fix_duration);
-                const duration = audio.duration;
-                console.log("new duration", duration);
 
-                if (duration === Infinity) {
-                    console.log("WTF JE TO TU ZAS");;
-                    return;
-                }
+            audio.volume = volume[0];
 
-                play_audio(duration);
-            }
-
-            async function play_audio(duration) {
-                const duration_mils = duration * 1000 + 100;
-                console.log('duration_mils: ', duration_mils);
+            // Can play through event.
+            audio.addEventListener("canplaythrough", (event) => {
+                console.log("audio play");
+                console.time("audio");
                 audio.play().catch((error) => {
                     console.error("NO PLAY! ", error);
+                    console.error("AUDIO ERROR?", audio.error);
+                    console.error(audio.src);
                     errors = maybe_push(errors, error, 5);
                     resolve();
                 });
-
-                console.log("duration wait start");
-                await new Promise((r) => setTimeout(r, duration_mils));
-                console.log("duration wait done");
-                resolve();
-            }
-
-            audio.volume = volume[0];
-            audio.addEventListener("loadedmetadata", async () => {
-                const duration = audio.duration;
-                console.log('duration: ', duration);
-
-                // Fix infinity duration bug.
-                if (duration === Infinity) {
-                    audio.currentTime = 1e101;
-                    audio.addEventListener("timeupdate", fix_duration);
-                    console.error("Infinity bug");
-                    return;
-                }
-
-                play_audio(duration);
             });
 
-            audio.addEventListener("error", (error) => {
-                console.error("Audio error:", error);
-                errors = maybe_push(errors, "Audio error", 5);
+            // Ended event.
+            audio.addEventListener("ended", (event) => {
+                console.log("audio ended", audio.src);
+                console.timeEnd("audio");
+                resolve();
+            });
+
+            // Error event.
+            audio.addEventListener("error", async (error) => {
+                const error_types = {
+                    "1": "MEDIA_ERR_ABORTED",
+                    "2": "MEDIA_ERR_NETWORK",
+                    "3": "MEDIA_ERR_DECODE",
+                    "4": "MEDIA_ERR_SRC_NOT_SUPPORTED",
+                };
+
+                errors = maybe_push(errors, `[${new Date().toLocaleString()}] ${error_types[audio?.error?.code]}`, 5);
                 resolve();
             });
 
@@ -445,9 +430,9 @@
     <h1>Volume: {volume[0]}</h1>
 
     {#if (errors.length > 0)}
-        <h1>{errors.length} last errors:</h1>
+        <h1>{errors.length} {errors.length > 4 ? "last" : ""} error{errors.length > 1 ? "s" : ""}:</h1>
         <ul>
-            {#each errors as error}
+            {#each errors.reverse() as error}
                 <li>{error}</li>
             {/each}
         </ul>
