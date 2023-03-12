@@ -8,17 +8,7 @@
     import tmi from "tmi.js";
     import {franc, francAll} from "franc";
 
-    import {maybe_push, modify_words} from "./utils.js";
-
-    const create_promise = () => {
-        let resolver;
-        return [
-            new Promise((resolve, reject) => {
-                resolver = resolve;
-            }),
-            resolver,
-        ];
-    }
+    import {maybe_push, modify_words, create_promise} from "./utils.js";
 
     // Settings.
     const settings = {
@@ -112,7 +102,7 @@
         const link_text = "odkaz";
 
         let new_message = modify_words(message, link_text);
-        console.log('new_message: ', new_message);
+        console.log("new_message: ", new_message);
 
         // Skip empty messages.
         if (new_message.trim().length < 1) {
@@ -145,7 +135,7 @@
         // Play AoE taunt.
         if (is_aoe_taunt) {
             const url = `/taunts/T_${message.trim()}.mp3`;
-            console.log('audio_src: ', audio_src);
+            console.log("audio_src: ", audio_src);
 
             // Check for file.
             const response = await fetch(url, {method: "HEAD"});

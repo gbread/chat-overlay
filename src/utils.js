@@ -58,3 +58,13 @@ export function modify_words(message, link_text) {
 export function is_url(link) {
     return Array.isArray(link.match(/(((https?:\/\/)|(www\.))[^\s]+)/gi));
 }
+
+export const create_promise = () => {
+    let resolver;
+    return [
+        new Promise((resolve, reject) => {
+            resolver = resolve;
+        }),
+        resolver,
+    ];
+}
