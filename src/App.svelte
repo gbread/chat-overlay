@@ -47,7 +47,7 @@
         // Apply found url parameters to settings.
         for (let possible_setting of possible_settings) {
             const setting_value = $router.query[possible_setting];
-            console.log(possible_setting, 'setting_value: ', setting_value);
+            console.log(possible_setting, "setting_value:", setting_value);
 
             // Store setting value.
             if (setting_value) {
@@ -68,7 +68,12 @@
     const talk_queue = fastq.promise(async (task_item) => {
         const {"badge-info": badge_info, badges, color, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, username} = task_item;
         let {message} = task_item;
-        console.log('task_item: ', task_item);
+
+        // Skip deleted message.
+        const message_index = messages.findIndex((m) => m.id === message_id);
+        if (message_index < 0) return;
+
+        console.log("task_item:", task_item);
 
         const [promise, resolve] = create_promise();
 
@@ -127,11 +132,8 @@
 
         // Show comparison.
         if (message !== new_message) {
-            const message_index = messages.findIndex((m) => m.id === message_id);
-            if (message_index >= 0) {
-                messages[message_index].text = `${new_message} (${message})`;
-                messages = messages;
-            }
+            messages[message_index].text = `${new_message} (${message})`;
+            messages = messages;
         }
 
         console.log("zacinam mluvit");
@@ -181,6 +183,12 @@
             audio.addEventListener("ended", (event) => {
                 console.log("audio ended", audio.src);
                 console.timeEnd("audio");
+                resolve();
+            });
+
+            // Stop audio on event.
+            emitter.on("stop_audio", () => {
+                audio.pause();
                 resolve();
             });
 
@@ -313,7 +321,7 @@
         })();
 
         // Maybe bail out.
-        console.log('read_message: ', read_message);
+        console.log("read_message:", read_message);
         if (!read_message) return;
 
         // Messages visual queue.
@@ -325,7 +333,7 @@
 
         // Determine if message is aoe taunt.
         const is_aoe_taunt = (settings.use_aoe_taunts === "true" && Number(message.trim()) == message.trim());
-        console.log('is_aoe_taunt: ', is_aoe_taunt);
+        console.log("is_aoe_taunt:", is_aoe_taunt);
         data.is_aoe_taunt = is_aoe_taunt;
 
         // TODO: split messages length
@@ -458,8 +466,28 @@
     {#if (messages.length > 0)}
         <h1>({messages.length}) Message queue:</h1>
         <ul>
-            {#each messages as message}
-                <li>{message.text}</li>
+            {#each messages as message, index (message.id)}
+                <li>
+                    {message.text}
+
+                    <!-- Skip / Remove button. -->
+                    <button on:click={() => {
+                        if (index > 0) {
+                            // Remove this message.
+                            messages.splice(index, 1);
+                            messages = messages;
+                        } else {
+                            // Stop this message.
+                            emitter.emit("stop_audio");
+                        }
+                    }}>
+                        {#if (index > 0)}
+                            remove
+                        {:else}
+                            skip
+                        {/if}
+                    </button>
+                </li>
             {/each}
         </ul>
     {/if}
