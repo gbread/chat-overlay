@@ -6,9 +6,14 @@
 
     import fastq from "fastq";
     import tmi from "tmi.js";
+
+    import mitt from "mitt";
+
     import {franc, francAll} from "franc";
 
     import {maybe_push, modify_words, create_promise} from "./utils.js";
+
+    const emitter = mitt();
 
     // Settings.
     const settings = {
@@ -148,7 +153,16 @@
         try {
             const audio = new Audio(audio_src);
 
-            audio.volume = volume[0];
+            // Audio volume.
+            audio.volume = Array.isArray(volume) ? volume[0] : 1;
+            emitter.on("set_audio_volume", (data) => {
+                const {volume} = data ?? "";
+                if (Array.isArray(volume)) {
+                    audio.volume = volume[0];
+                } else {
+                    audio.volume = 1;
+                }
+            });
 
             // Can play through event.
             audio.addEventListener("canplaythrough", (event) => {
@@ -425,6 +439,9 @@
     <div class="max-width">
         <RangeSlider min={0} max={1} step={0.01} pips hoverable all="label" float pipstep={10} bind:values={volume} on:change={() => {
             localStorage.setItem("volume", volume);
+            emitter.emit("set_audio_volume", {
+                volume,
+            });
         }} />
     </div>
     <h1>Volume: {volume[0]}</h1>
