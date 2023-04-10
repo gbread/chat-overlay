@@ -9,8 +9,6 @@
 
     import mitt from "mitt";
 
-    import {franc, francAll} from "franc";
-
     import {maybe_push, modify_words, create_promise} from "./utils.js";
 
     const emitter = mitt();
@@ -82,16 +80,6 @@
             messages.shift();
             messages = messages;
         };
-
-        const ee = francAll(message, {
-            only: languages,
-        });
-        console.log('ee: ', ee);
-
-        const e = franc(message, {
-            only: languages,
-        });
-        console.log('e: ', e);
 
         if (settings.skip_emote_only_messages && is_emote_only) return bail_out();
 
@@ -233,11 +221,6 @@
     let message = "";
     let volume = [localStorage.getItem("volume") || 1];
     let previous_username = null;
-    const languages = [
-        "eng",
-        "ces",
-        "slk",
-    ];
 
     let client;
 
