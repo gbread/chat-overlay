@@ -9,7 +9,9 @@
         "preview": "vite preview"
     },
     "devDependencies": {
+        "@picocss/pico": "^1.5.9",
         "@sveltejs/vite-plugin-svelte": "^2.0.3",
+        "simple-svelte-autocomplete": "^2.5.2",
         "svelte": "^3.55.1",
         "svelte-range-slider-pips": "^2.1.1",
         "vite": "^4.1.4"
@@ -19,6 +21,7 @@
         "emoji-regex": "^10.2.1",
         "fastq": "^1.15.0",
         "franc": "^6.1.0",
+        "lowdb": "^5.1.0",
         "mitt": "^3.0.0",
         "tinro": "^0.6.12",
         "tmi.js": "^1.8.5"

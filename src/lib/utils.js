@@ -1,5 +1,19 @@
 import emoji_regex from "emoji-regex";
 
+import mitt from "mitt";
+
+export const emitter = mitt();
+
+export function debounce(callback, wait) {
+    let timeout_id = null;
+    return (...args) => {
+        window.clearTimeout(timeout_id);
+        timeout_id = window.setTimeout(() => {
+            callback.apply(null, args);
+        }, wait);
+    };
+}
+
 /**
  * Limit the size of array
  *
@@ -67,4 +81,21 @@ export const create_promise = () => {
         }),
         resolver,
     ];
+}
+
+/**
+ * Get indexes of substrings in string
+ *
+ * @param {*} array
+ * @param {string} search_item
+ * @returns {array}
+ */
+export function index_of_all(array, search_item) {
+    let index = array.indexOf(search_item);
+    const indexes = [];
+    while (index !== -1) {
+      indexes.push(index);
+      index = array.indexOf(search_item, ++index);
+    }
+    return indexes;
 }
