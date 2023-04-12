@@ -126,7 +126,7 @@ const audio_queue = fastq.promise(async (task_item) => {
                 console.error("NO PLAY! ", error);
                 console.error("AUDIO ERROR?", audio.error);
                 console.error(audio.src);
-                errors = maybe_push(errors, error, 5);
+                tts_errors.set(maybe_push(errors, error, 5));
                 resolve();
             });
         });
@@ -154,14 +154,14 @@ const audio_queue = fastq.promise(async (task_item) => {
                 "4": "MEDIA_ERR_SRC_NOT_SUPPORTED",
             };
 
-            errors = maybe_push(errors, `[${new Date().toLocaleString()}] ${error_types[audio?.error?.code]}`, 5);
+            tts_errors.set(maybe_push(errors, `[${new Date().toLocaleString()}] ${error_types[audio?.error?.code]}`, 5));
             resolve();
         });
 
     } catch (error) {
         resolve();
         console.log("ERRRROROR", error);
-        errors = maybe_push(errors, error, 5);
+        tts_errors.set(maybe_push(errors, error, 5));
     }
 
     await promise;
