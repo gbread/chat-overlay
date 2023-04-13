@@ -208,6 +208,7 @@ export function parse_message(channel, data, message, is_self) {
     const is_broadcaster = badges?.broadcaster ?? false;
     const sent_bits = badges?.bits ?? false;
     const has_no_video = badges?.no_video ?? false;
+    const is_founder = badges?.founder ?? false;
 
     maybe_save_username(username, user_id);
 
