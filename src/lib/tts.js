@@ -3,7 +3,7 @@ import fastq from "fastq";
 
 import {settings_db, usernames_db, usernames_blacklist_db, usernames_whitelist_db} from "./db.js";
 
-import {emitter, maybe_push, create_promise} from "./utils.js";
+import {emitter, maybe_push, create_promise, is_url, emoji_regex} from "./utils.js";
 
 import {tts_messages, tts_errors} from "./stores.js";
 

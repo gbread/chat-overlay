@@ -67,3 +67,7 @@ export function index_of_all(array, search_item) {
     }
     return indexes;
 }
+
+export {
+    emoji_regex,
+};
