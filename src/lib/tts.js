@@ -3,7 +3,7 @@ import fastq from "fastq";
 
 import {settings_db, usernames_db, usernames_blacklist_db, usernames_whitelist_db} from "./db.js";
 
-import {emitter, maybe_push, modify_words, create_promise} from "./utils.js";
+import {emitter, maybe_push, create_promise} from "./utils.js";
 
 import {tts_messages, tts_errors} from "./stores.js";
 
@@ -182,6 +182,38 @@ audio_queue.error((error, task_item) => {
 
     console.error("Audio queue error:", error);
 });
+
+function modify_words(message, link_text) {
+    let message_fragments = message.split(/\s/gi);
+    console.log("message_fragments before", message_fragments);
+
+    // Modify words.
+    for (let i = 0; i < message_fragments.length; i++) {
+        let message_fragment = message_fragments[i];
+
+        (() => {
+            // URLs.
+            if (is_url(message_fragment)) {
+                message_fragment = link_text;
+                return;
+            }
+
+            // Remove underscores.
+            message_fragment = message_fragment.replaceAll("_", " ");
+
+            // Add space before number.
+            message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
+
+            // Remove Emojis.
+            message_fragment = message_fragment.replace(emoji_regex(), "");
+        })();
+
+        message_fragments[i] = message_fragment.toLowerCase();
+    }
+
+    console.log("message_fragments after", message_fragments);
+    return message_fragments.join(" ");
+}
 
 export function parse_message(channel, data, message, is_self) {
     console.log("data:", data, "message: ", message);
