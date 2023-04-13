@@ -16,7 +16,7 @@ let previous_username = null;
 
 // Audio queue.
 const audio_queue = fastq.promise(async (task_item) => {
-    const {"badge-info": badge_info, badges, color, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, "user-id": user_id, username} = task_item;
+    const {"badge-info": badge_info, badges, color, "custom-reward-id": custom_reward_id, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, "user-id": user_id, username} = task_item;
     let {message} = task_item;
 
     // Skip deleted message.
@@ -191,6 +191,7 @@ export function parse_message(channel, data, message, is_self) {
         badges = {},
         "badges-raw": badges_raw,
         color,
+        "custom-reward-id": custom_reward_id,
         "display-name": display_name,
         "emote-only": is_emote_only,
         emotes,
