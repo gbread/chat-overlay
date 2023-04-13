@@ -101,19 +101,8 @@
 </main>
 
 <style>
-    :global(body) .body {
-      /*--bg-color: #000;*/
-      --bg-color: #1b1b1b;
-      /*--bg-secondary-color: #131316;*/
-      --bg-secondary-color: #343434;
-      --font-color: #f5f5f5;
-      --color-grey: #ccc;
-      --color-darkGrey: #777;
-    }
-
     /* Override default OBS browser source css. */
     :global(body) {
-        /*background-color: var(--bg-color) !important;*/
         overflow: initial !important;
     }
 
