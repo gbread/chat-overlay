@@ -65,7 +65,9 @@ const audio_queue = fastq.promise(async (task_item) => {
     let new_username = modify_words(username, link_text);
     if (settings_db.data.skip_over_numbers_in_usernames) {
         new_username = new_username.replace(/\d+/g, "");
-        console.log("changed username", username, "->", new_username);
+        if (new_username !== username) {
+            console.log("changed username", username, "->", new_username);
+        }
     }
 
     // Say name.
