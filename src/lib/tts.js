@@ -1,7 +1,8 @@
+import dictionaries from "../assets/dictionaries.js";
 
 import fastq from "fastq";
 
-import {settings_db, usernames_db, usernames_blacklist_db, usernames_whitelist_db} from "./db.js";
+import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db} from "./db.js";
 
 import {emitter, maybe_push, create_promise, is_url, emoji_regex} from "./utils.js";
 
@@ -52,8 +53,8 @@ const audio_queue = fastq.promise(async (task_item) => {
 
     const link_text = settings_db.data.link_text;
 
-    let new_message = modify_words(message, link_text);
-    console.log("new_message: ", new_message);
+    let new_message = modify_words(message.toLowerCase(), link_text, dictionaries[settings_db.data.tts_language.toLowerCase()]);
+    console.log("new_message:", new_message);
 
     // Skip empty messages.
     if (new_message.trim().length < 1) {
@@ -62,12 +63,9 @@ const audio_queue = fastq.promise(async (task_item) => {
     }
 
     // Modify username.
-    let new_username = modify_words(username, link_text);
-    if (settings_db.data.skip_over_numbers_in_usernames) {
-        new_username = new_username.replace(/\d+/g, "");
-        if (new_username !== username) {
-            console.log("changed username", username, "->", new_username);
-        }
+    let new_username = get_user_alias({username}, "username");
+    if (!new_username) {
+        new_username = maybe_remove_numbers(modify_words(username, link_text));
     }
 
     // Say name.
@@ -183,9 +181,10 @@ audio_queue.error((error, task_item) => {
     console.error("Audio queue error:", error);
 });
 
-function modify_words(message, link_text) {
-    let message_fragments = message.split(/\s/gi);
-    console.log("message_fragments before", message_fragments);
+function modify_words(message, link_text, dictionary) {
+    // Add space before punctuations and split message into words
+    let message_fragments = message.replace(/([.?!,]+)/gi, " $1").split(/\s/gi);
+    console.log("message_fragments before:", message_fragments);
 
     // Modify words.
     for (let i = 0; i < message_fragments.length; i++) {
@@ -198,6 +197,36 @@ function modify_words(message, link_text) {
                 return;
             }
 
+            // Handle usernames.
+            if (message_fragment.startsWith("@")) {
+                const user = {username: message_fragment.substring(1)};
+                // Remove blacklisted username.
+                if (!is_user_whitelisted(user, "username") && is_user_blacklisted(user, "username")) {
+                    message_fragment = "";
+                    return;
+                }
+
+                // Change username to alias.
+                const username_alias = get_user_alias(user, "username");
+                if (username_alias) {
+                    message_fragment = `@${username_alias}`;
+                    return;
+                }
+
+                // Remove numbers from username.
+                if (settings_db.data.skip_over_numbers_in_usernames) {
+                    message_fragment = maybe_remove_numbers(message_fragment);
+                }
+            }
+
+            // Replace message fragment with dictionary item.
+            if (dictionary) {
+                const found = dictionary[message_fragment];
+                if (found) {
+                    message_fragment = found;
+                }
+            }
+
             // Remove underscores.
             message_fragment = message_fragment.replaceAll("_", " ");
 
@@ -208,11 +237,58 @@ function modify_words(message, link_text) {
             message_fragment = message_fragment.replace(emoji_regex(), "");
         })();
 
-        message_fragments[i] = message_fragment.toLowerCase();
+        message_fragments[i] = message_fragment;
     }
 
-    console.log("message_fragments after", message_fragments);
-    return message_fragments.join(" ");
+    console.log("message_fragments after:", message_fragments);
+    return message_fragments.join(" ").toLowerCase();
+}
+
+function is_user_whitelisted(user, type) {
+    return is_user_in_db(users_whitelist_db, user, type);
+}
+
+function is_user_blacklisted(user, type) {
+    return is_user_in_db(users_blacklist_db, user, type);
+}
+
+function get_user_alias(user, type) {
+    return is_user_in_db(users_aliases_db, user, type, true)?.alias ?? "";
+}
+
+function is_user_in_db(db, user, type, get = false) {
+    const {user_id, username, alias} = user;
+    let found;
+
+    if (username && type === "username") {
+        found = db.data.find((db_user) => db_user[type].toLowerCase() === username.toLowerCase());
+        if (get) {
+            return found;
+        }
+
+        return !!found;
+    } else if (user_id && type === "user_id") {
+        found = !!db.data.find((db_user) => db_user.user_id === Number(user_id));
+        if (get) {
+            return found;
+        }
+
+        return !!found;
+    }
+
+    return false;
+}
+
+function maybe_remove_numbers(message) {
+    if (!settings_db.data.skip_over_numbers_in_usernames) return message;
+    const new_message = message.replace(/\d+/g, "");
+
+    // Log change.
+    if (new_message !== message) {
+        console.log("removed numbers", message, "->", new_message);
+    }
+
+    return new_message;
 }
 
 export function parse_message(channel, data, message, is_self) {
@@ -241,6 +317,9 @@ export function parse_message(channel, data, message, is_self) {
     const sent_bits = badges?.bits ?? false;
     const has_no_video = badges?.no_video ?? false;
     const is_founder = badges?.founder ?? false;
+    const is_partner = badges?.partner ?? false;
+    const is_prime = badges?.premium ?? false;
+    const user = {user_id, username};
 
     maybe_save_username(username, user_id);
 
@@ -250,31 +329,42 @@ export function parse_message(channel, data, message, is_self) {
     // Skip command.
     if (message && message.startsWith("!")) return;
 
-    // Skip blacklisted usernames.
-    if ((user_id && usernames_blacklist_db.data.includes(Number(user_id))) || (username && usernames_blacklist_db.data.includes(username.toLowerCase()))) return;
+    const is_whitelisted = {
+        user_id: is_user_whitelisted(user, "user_id"),
+        username: is_user_whitelisted(user, "username"),
+    }
+
+    // Skip non-whitelisted blacklisted usernames.
+    if (!is_whitelisted.user_id && !is_whitelisted.username) {
+        if (is_user_blacklisted(user, "user_id") || is_user_blacklisted(user, "username")) return;
+    }
 
     let read_message = false;
 
-    // Determine if to read
+    // Determine whether to read this message.
     (() => {
-        if (settings_db.data.read_broadcaster && is_broadcaster) {
+        const allow_message = () => {
             read_message = true;
-            return;
+        };
+
+        if (is_whitelisted.user_id || is_whitelisted.username) {
+            return allow_message();
+        }
+
+        if (settings_db.data.read_broadcaster && is_broadcaster) {
+            return allow_message();
         }
 
         if (settings_db.data.read_vip_users && is_vip) {
-            read_message = true;
-            return;
+            return allow_message();
         }
 
         if (settings_db.data.read_subscribers && is_subscriber) {
-            read_message = true;
-            return;
+            return allow_message();
         }
 
         if (settings_db.data.read_nonsubscribers && !is_subscriber) {
-            read_message = true;
-            return;
+            return allow_message();
         }
 
     })();

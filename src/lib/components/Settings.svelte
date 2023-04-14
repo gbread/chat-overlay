@@ -1,12 +1,20 @@
 <script>
-    import languages from "../../assets/languages-en-us.json";
+    import languages from "../../assets/languages.js";
+    // test these: ,af,af-ZA,am,am-ET,ar-EG,ar-AE,ar-KW,ar-QA,ar,ar-IL,ar-JO,ar-LB,ar-PS,az,az-AZ,bg,bg-BG,bn,bn-BD,bn-IN,ca,ca-es,cs,cs-CZ,de,de-DE,de-CH,de-AT,de-LI,en,en-US,en-CA,en-AU,en-NZ,en-GB,en-IN,en-KE,en-TZ,en-NG,en-GH,en-PH,en-ZA,es,es-ES,es-AR,es-UY,es-419,es-BO,es-CL,es-CR,es-CO,es-DO,es-EC,es-GT,es-HN,es-NI,es-PA,es-PE,es-PR,es-PY,es-SV,es-VE,es-MX,es-US,eu,eu-ES,fi,fi-FI,fr,fr-FR,fr-CH,fr-BE,gl,gl-ES,gu,gu-IN,he,he-IL,iw,iw-IL,hu,hu-HU,hy,hy-AM,id,id-ID,is,is-IS,it,it-IT,it-CH,ja,ja-JP,jv,jv-ID,ka,ka-GE,km,km-KH,kn,kn-IN,ko,ko-KR,la,lo,lo-LA,lv,lv-LV,ml,ml-IN,mr,mr-IN,ms,ms-MY,nl,nl-NL,nb,nb-NO,ne,ne-NP,pl,pl-PL,pt,pt-BR,pt-PT,ro,ro-RO,ru,ru-RU,si-LK,sk,sk-SK,sr,sr-RS,su,su-ID,sv,sv-SE,sw,sw-TZ,sw-KE,ta,ta-IN,ta-SG,ta-LK,ta-MY,te,te-IN,tr,tr-TR,ur,ur-PK,ur-IN,yue,yue-HK,yue-Hant-HK,zh-HK,zh,zh-CN,zh-cmn,zh-cmn-CN,zh-Hans,zh-Hans-CN,zh-cmn-Hans,zh-cmn-Hans-CN,cmn-CN,cmn-Hans,cmn-Hans-CN,zh-TW,zh-Hant-TW,cmn-TW,cmn-Hant-TW,zh-cmn-TW,zh-cmn-Hant-TW,zu,zu-ZA
+
+    import Dialog from "./Dialog.svelte";
+    import UsersBlacklist from "./UsersBlacklist.svelte";
+    import UsersWhitelist from "./UsersWhitelist.svelte";
+    import UsersAliasesList from "./UsersAliasesList.svelte";
+    import DictionariesList from "./DictionariesList.svelte";
 
     import AutoComplete from "simple-svelte-autocomplete";
 
-    import {settings_db} from "../db.js";
+    import {settings_db, users_blacklist_db, usernames_db} from "../db.js";
 
     import {emitter} from "../utils.js";
 
+    let app_language = "en-us";
     const settings_schema = {
         channel: {
             label: "Channel",
@@ -159,6 +167,10 @@
         return depth;
     }
 
+    let users_blacklist_save;
+    let users_whitelist_save;
+    let users_aliases_save;
+
 </script>
 
 <h2>Settings:</h2>
@@ -188,11 +200,11 @@
                         <span class="range-value">{value.toFixed(2)}</span>
                     </div>
                 {:else if (schema.type === "select")}
-                    {@const set_language = (value) => languages.find((language) => language.code.toLowerCase() === value.toLowerCase())}
+                    {@const set_language = (value) => languages[app_language].find((language) => language.code.toLowerCase() === value.toLowerCase())}
 
                     <div class="vertical-wrap">
                         {schema.label}
-                        <AutoComplete items={languages} labelFieldName="name" placeholder={schema.label} selectedItem={set_language(value)} onChange={(data) => save_setting(key, data.code, schema)} />
+                        <AutoComplete items={languages[app_language]} labelFieldName="name" placeholder={schema.label} selectedItem={set_language(value)} onChange={(data) => save_setting(key, data.code, schema)} />
                     </div>
                 {/if}
             </li>
@@ -200,15 +212,42 @@
     {/each}
 </ul>
 
-<style>
-    ul.-no-bullets {
-        padding-left: 0;
-    }
-    ul.-no-bullets li {
-        list-style: none;
-    }
+<div>
+    <!-- Users blacklist. -->
+    <Dialog on_save={users_blacklist_save}>
+        <svelte:fragment slot="button-open-text">
+            Show users blacklist
+        </svelte:fragment>
 
-    ul li.-dependant {
-        padding-left: calc(var(--spacing) * var(--depth, 1));
-    }
-</style>
+        <UsersBlacklist slot="dialog-content" bind:save_items={users_blacklist_save} />
+    </Dialog>
+
+    <!-- Users whitelist. -->
+    <Dialog on_save={users_whitelist_save}>
+        <svelte:fragment slot="button-open-text">
+            Show users whitelist
+        </svelte:fragment>
+
+        <UsersWhitelist slot="dialog-content" bind:save_items={users_whitelist_save} />
+    </Dialog>
+
+    <!-- Users aliases. -->
+    <Dialog on_save={users_aliases_save}>
+        <svelte:fragment slot="button-open-text">
+            Show users aliases
+        </svelte:fragment>
+
+        <UsersAliasesList slot="dialog-content" bind:save_items={users_aliases_save} />
+    </Dialog>
+
+    <!-- Dictionaries -->
+    {#if (settings_db.data.use_tts)}
+        <Dialog>
+            <svelte:fragment slot="button-open-text">
+                Show dictionaries
+            </svelte:fragment>
+
+            <DictionariesList slot="dialog-content" />
+        </Dialog>
+    {/if}
+</div>

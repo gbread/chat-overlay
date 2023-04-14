@@ -41,25 +41,46 @@ const usernames_db = new LowSync(new LocalStorage("usernames"));
 usernames_db.read();
 usernames_db.data ||= {};
 
-// Usernames blacklist.
-const usernames_blacklist_db = new LowSync(new LocalStorage("usernames_blacklist"));
-usernames_blacklist_db.read();
-usernames_blacklist_db.data ||= [
-    "streamelements",
-    "streamlabs",
-    "nightbot",
-    "soundalerts",
-    786049415, // spectatordashboard
+// Users blacklist.
+const users_blacklist_db = new LowSync(new LocalStorage("users_blacklist"));
+users_blacklist_db.read();
+users_blacklist_db.data ||= [
+    {
+        user_id: 100135110,
+        username: "streamelements",
+    },
+    {
+        user_id: 105166207,
+        username: "streamlabs",
+    },
+    {
+        user_id: 19264788,
+        username: "nightbot",
+    },
+    {
+        user_id: 216527497,
+        username: "soundalerts",
+    },
+    {
+        user_id: 786049415,
+        username: "spectatordashboard",
+    },
 ];
 
-// Usernames whitelist.
-const usernames_whitelist_db = new LowSync(new LocalStorage("usernames_whitelist"));
-usernames_whitelist_db.read();
-usernames_whitelist_db.data ||= [];
+// Users whitelist.
+const users_whitelist_db = new LowSync(new LocalStorage("users_whitelist"));
+users_whitelist_db.read();
+users_whitelist_db.data ||= [];
+
+// Users aliases.
+const users_aliases_db = new LowSync(new LocalStorage("users_aliases"));
+users_aliases_db.read();
+users_aliases_db.data ||= [];
 
 export {
     settings_db,
     usernames_db,
-    usernames_blacklist_db,
-    usernames_whitelist_db
+    users_blacklist_db,
+    users_whitelist_db,
+    users_aliases_db,
 };

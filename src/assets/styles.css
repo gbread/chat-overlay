@@ -1,0 +1,138 @@
+
+/* Override default OBS browser source css. */
+body {
+    overflow: initial !important;
+}
+
+.container-fluid {
+    padding-top: var(--spacing);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1em;
+}
+
+.grid.-columns {
+    grid-template-columns: repeat(auto-fit, minmax(0%, 1fr));
+}
+
+hr {
+    border-color: var(--secondary-hover);
+}
+
+.btn-small {
+    display: inline-block;
+    width: auto;
+}
+
+.vertical-wrap {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+.vertical-wrap input {
+    margin-bottom: 0;
+}
+.vertical-wrap .range-value {
+    flex-basis: 50px;
+    flex-shrink: 0;
+}
+.vertical-wrap .label {
+    flex-shrink: 0;
+}
+.vertical-wrap .autocomplete {
+    min-width: 300px !important;
+    height: 39px !important;
+    vertical-align: middle !important;
+}
+.vertical-wrap .autocomplete-list {
+    top: 0 !important;
+    max-height: calc(8 * (1rem + 10px) + 15px) !important;
+}
+
+ul.-no-bullets {
+    padding-left: 0;
+}
+ul.-no-bullets li {
+    list-style: none;
+}
+
+ul li.-dependant {
+    padding-left: calc(var(--spacing) * var(--depth, 1));
+}
+
+dialog article {
+    min-width: 75vw;
+}
+dialog article button.close {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+}
+dialog article p:last-of-type + * {
+    margin-top: var(--typography-spacing-vertical);
+}
+dialog article > *:nth-last-child(2), dialog article figure table {
+    margin: 0;
+}
+dialog article > footer button {
+    margin-bottom: 0;
+}
+dialog article figure.-has-autocomplete {
+    min-height: 275px;
+}
+
+.success, .success:is([aria-current],:hover,:active,:focus) {
+    --background-color: var(--form-element-valid-border-color);
+    --border-color: var(--form-element-valid-border-color);
+    --color: var(--primary-inverse);
+}
+
+.danger, .danger:is([aria-current],:hover,:active,:focus) {
+    --background-color: var(--form-element-invalid-border-color);
+    --border-color: var(--form-element-invalid-border-color);
+    --color: var(--primary-inverse);
+}
+
+.small {
+    --form-element-spacing-vertical: 0.3rem;
+    --form-element-spacing-horizontal: 0.5rem;
+}
+
+table button {
+    margin: 0;
+}
+
+.align-left {
+    text-align: left;
+}
+.align-right {
+    text-align: right;
+}
+
+.no-mb {
+    margin-bottom: 0;
+}
+
+td input {
+    margin-bottom: 0 !important;
+}
+
+td .autocomplete {
+    width: 100% !important;
+    height: auto !important;
+}
+td .autocomplete-list {
+    position: absolute !important;
+}
+td .autocomplete-list.-top {
+    top: initial !important;
+    bottom: 100%;
+}
+td .autocomplete-list.-bottom {
+    top: 100% !important;
+}
+td .autocomplete-input {
+    height: calc(1rem * var(--line-height) + var(--form-element-spacing-vertical) * 2 + var(--border-width) * 2) !important;
+    padding: var(--form-element-spacing-vertical) var(--form-element-spacing-horizontal) !important;
+}

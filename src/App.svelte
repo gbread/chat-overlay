@@ -1,6 +1,6 @@
 <script>
-    //import "./assets/chota.min.css";
     import "@picocss/pico";
+    import "./assets/styles.css";
 
     import Settings from "./lib/components/Settings.svelte";
     import TTS from "./lib/components/TTS.svelte";
@@ -88,63 +88,4 @@
             {/if}
         {/if}
     </Route>
-
-    <Route path="/settings">
-        <Settings />
-        <button on:click={() => router.goto("/")}>Go back</button>
-    </Route>
-
-    <Route path="/tts">
-        <TTS />
-        <button on:click={() => router.goto("/")}>Go back</button>
-    </Route>
 </main>
-
-<style>
-    /* Override default OBS browser source css. */
-    :global(body) {
-        overflow: initial !important;
-    }
-
-    .container-fluid {
-        padding-top: var(--spacing);
-    }
-
-    :global(h1, h2, h3, h4, h5, h6) {
-        margin-bottom: 1em;
-    }
-
-    :global(.grid.-columns) {
-        grid-template-columns: repeat(auto-fit, minmax(0%, 1fr));
-    }
-
-    :global(.btn-small) {
-        display: inline-block;
-        width: auto;
-    }
-
-    :global(.vertical-wrap) {
-        display: flex;
-        align-items: center;
-        column-gap: 10px;
-    }
-    :global(.vertical-wrap input) {
-        margin-bottom: 0;
-    }
-    :global(.vertical-wrap .range-value) {
-        flex-basis: 50px;
-        flex-shrink: 0;
-    }
-    :global(.vertical-wrap .label) {
-        flex-shrink: 0;
-    }
-    :global(.vertical-wrap .autocomplete) {
-        min-width: 300px !important;
-        height: 39px !important;
-        vertical-align: middle !important;
-    }
-    :global(.vertical-wrap .autocomplete-list) {
-        top: 0 !important;
-        max-height: calc(8 * (1rem + 10px) + 15px) !important;
-    }
-</style>
