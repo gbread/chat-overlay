@@ -2,6 +2,7 @@
     import UsersAliasesItem from "./UsersAliasesItem.svelte";
 
     import diff from "microdiff";
+    import {klona} from "klona/json";
 
     import {users_aliases_db} from "../db.js";
 

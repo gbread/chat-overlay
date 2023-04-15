@@ -2,6 +2,7 @@
     import UsersWhitelistItem from "./UsersWhitelistItem.svelte";
 
     import diff from "microdiff";
+    import {klona} from "klona/json";
 
     import {users_whitelist_db} from "../db.js";
 
