@@ -136,3 +136,27 @@ td .autocomplete-input {
     height: calc(1rem * var(--line-height) + var(--form-element-spacing-vertical) * 2 + var(--border-width) * 2) !important;
     padding: var(--form-element-spacing-vertical) var(--form-element-spacing-horizontal) !important;
 }
+
+ul._toastContainer > li {
+    list-style: none;
+}
+._toastContainer {
+    --toastContainerTop: var(--spacing);
+    --toastContainerRight: var(--spacing);
+    --toastContainerLeft: var(--spacing);
+    --toastContainerBottom: var(--spacing);
+}
+._toastItem {
+    --toastBackground: var(--background-color);
+    --toastWidth: auto;
+}
+._toastItem .error-icon {
+    width: 26px;
+    height: 26px;
+    display: inline-block;
+    stroke: white;
+    margin-right: 8px;
+}
+._toastItem .error-icon + span {
+    vertical-align: middle;
+}

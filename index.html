@@ -6,8 +6,26 @@
         <meta name="referrer" content="no-referrer">
 
         <title>Chat overlay</title>
+
+        <!-- Load `toast` and `SvelteToast` into global scope. -->
+        <script src="https://cdn.jsdelivr.net/npm/@zerodevx/svelte-toast"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                new SvelteToast({
+                    target: document.querySelector("#error-toasts"),
+                    props: {
+                        options: {
+                            initial: 0,
+                            classes: ["danger"],
+                        },
+                    },
+                });
+            });
+        </script>
     </head>
     <body>
+        <div id="error-toasts"></div>
         <div id="app"></div>
         <script type="module" src="/src/main.js"></script>
     </body>

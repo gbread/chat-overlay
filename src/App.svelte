@@ -2,6 +2,8 @@
     import "@picocss/pico";
     import "./assets/styles.css";
 
+    import {onMount} from "svelte";
+
     import Settings from "./lib/components/Settings.svelte";
     import TTS from "./lib/components/TTS.svelte";
 
@@ -57,6 +59,32 @@
 
     emitter.on("set_channel", connect);
     connect($settings_db.data.channel);
+
+    // Detect and display error notifications.
+    onMount(() => {
+        const report_error = (error = "unknown error") => {
+            const error_icon = `<svg xmlns="http://www.w3.org/2000/svg" class="error-icon" fill="none" viewBox="0 0 24 24"><title>Error</title><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            window.toast.push(`${error_icon} <span>${error}</span>`);
+        }
+
+        const handle_rejection = (event) => {
+            event.preventDefault();
+            report_error(event?.reason);
+        }
+
+        const handle_error = (event) => {
+            event.preventDefault();
+            report_error(event?.message);
+        }
+
+        window.addEventListener("unhandledrejection", handle_rejection);
+        window.addEventListener("error", handle_error);
+
+        return () => {
+            window.removeEventListener("unhandledrejection", handle_rejection);
+            window.removeEventListener("error", handle_error);
+        }
+    });
 
 </script>
 
