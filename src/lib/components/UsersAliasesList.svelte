@@ -27,7 +27,7 @@
     }
 
     // Snapshot data.
-    let users_aliases = structuredClone(users_aliases_db.data);
+    let users_aliases = klona(users_aliases_db.data);
 
     function remove_item(index) {
         users_aliases.splice(index, 1);

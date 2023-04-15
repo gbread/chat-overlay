@@ -27,7 +27,7 @@
     }
 
     // Snapshot data.
-    let users_whitelist = structuredClone(users_whitelist_db.data);
+    let users_whitelist = klona(users_whitelist_db.data);
 
     function remove_item(index) {
         users_whitelist.splice(index, 1);
