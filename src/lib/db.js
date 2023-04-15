@@ -1,12 +1,15 @@
+import {get, writable} from "svelte/store";
+
 import {LowSync} from "lowdb";
 import {LocalStorage} from "lowdb/browser";
 
 // Settings.
-const settings_db = new LowSync(new LocalStorage("settings"));
-settings_db.read();
-settings_db.data ||= {};
+const settings_db = writable(new LowSync(new LocalStorage("settings")));
+const settings = get(settings_db);
+settings.read();
+settings.data ||= {};
 
-// Set defaults,
+// Set defaults.
 const settings_db_default = {
     channel: "",
     show_chat: false,
@@ -29,10 +32,12 @@ const settings_db_default = {
     preserve_pitch: true,
 };
 
-settings_db.data = {
+// Merge defaults with current data.
+settings.data = {
     ...settings_db_default,
-    ...settings_db.data,
+    ...settings.data,
 }
+settings_db.set(settings);
 
 // TODO: migrations
 

@@ -24,7 +24,7 @@
     });
     let is_connected = false;
 
-    if (settings_db.data.use_tts) {
+    if ($settings_db.data.use_tts) {
         console.log("Listening to messages");
         client.on("message", parse_message);
 
@@ -56,7 +56,7 @@
     }, 1500);
 
     emitter.on("set_channel", connect);
-    connect(settings_db.data.channel);
+    connect($settings_db.data.channel);
 
 </script>
 
@@ -74,7 +74,7 @@
             <Settings />
         {/if}
 
-        {#if (settings_db.data.use_tts)}
+        {#if ($settings_db.data.use_tts)}
             <button class="btn-small" on:click={() => show_tts = !show_tts}>
                 {#if (show_tts)}
                     Hide TTS

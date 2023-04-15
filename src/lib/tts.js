@@ -8,11 +8,18 @@ import {emitter, maybe_push, create_promise, is_url, emoji_regex} from "./utils.
 
 import {tts_messages, tts_errors} from "./stores.js";
 
+// Settings data.
+let settings_data = {};
+settings_db.subscribe(($settings_db) => settings_data = $settings_db.data);
+
+// Messages.
 let messages = [];
 tts_messages.subscribe(($messages) => messages = $messages);
 
+// Errors.
 let errors = [];
 tts_errors.subscribe(($errors) => errors = $errors);
+
 let previous_username = null;
 
 // Audio queue.
@@ -34,12 +41,12 @@ const audio_queue = fastq.promise(async (task_item) => {
         tts_messages.set(messages);
     };
 
-    if (settings_db.data.skip_emote_only_messages && is_emote_only) return bail_out();
+    if (settings_data.skip_emote_only_messages && is_emote_only) return bail_out();
 
     console.log("message before:", message);
 
     // Remove all Twitch emotes.
-    if (settings_db.data.remove_twitch_emotes && emotes) {
+    if (settings_data.remove_twitch_emotes && emotes) {
         const character_to_remove = "|";
         for (const coordinates of Object.values(emotes)) {
             coordinates.forEach((coordinate) => {
@@ -51,9 +58,9 @@ const audio_queue = fastq.promise(async (task_item) => {
         message = message.replaceAll(character_to_remove, "");
     }
 
-    const link_text = settings_db.data.link_text;
+    const link_text = settings_data.link_text;
 
-    let new_message = modify_words(message.toLowerCase(), link_text, dictionaries[settings_db.data.tts_language.toLowerCase()]);
+    let new_message = modify_words(message.toLowerCase(), link_text, dictionaries[settings_data.tts_language.toLowerCase()]);
     console.log("new_message:", new_message);
 
     // Skip empty messages.
@@ -70,9 +77,9 @@ const audio_queue = fastq.promise(async (task_item) => {
 
     // Say name.
     if (new_message === link_text) {
-        new_message = `${new_username} ${settings_db.data.username_only_link_separator} ${link_text}`;
-    } else if (settings_db.data.say_usernames && say_name) {
-        new_message = `${new_username} ${settings_db.data.username_separator} ${new_message}`;
+        new_message = `${new_username} ${settings_data.username_only_link_separator} ${link_text}`;
+    } else if (settings_data.say_usernames && say_name) {
+        new_message = `${new_username} ${settings_data.username_separator} ${new_message}`;
     }
 
     // Show comparison.
@@ -82,7 +89,7 @@ const audio_queue = fastq.promise(async (task_item) => {
     }
 
     console.log("zacinam mluvit");
-    const lang = settings_db.data.tts_language.toLowerCase();
+    const lang = settings_data.tts_language.toLowerCase();
     let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(new_message)}`;
 
     // Play AoE taunt.
@@ -102,19 +109,19 @@ const audio_queue = fastq.promise(async (task_item) => {
         const audio = new Audio(audio_src);
 
         // Audio volume.
-        audio.volume = settings_db.data.volume;
+        audio.volume = settings_data.volume;
         emitter.on("audio_change_volume", ({volume}) => {
             audio.volume = volume;
         });
 
         // Audio speed.
-        audio.playbackRate = settings_db.data.speed;
+        audio.playbackRate = settings_data.speed;
         emitter.on("audio_change_speed", ({speed}) => {
             audio.playbackRate = speed;
         });
 
         // Audio preserve pitch.
-        audio.preservesPitch = settings_db.data.preserve_pitch;
+        audio.preservesPitch = settings_data.preserve_pitch;
         emitter.on("audio_change_preserves_pitch", ({preserve_pitch}) => {
             audio.preservesPitch = preserve_pitch;
         });
@@ -214,7 +221,7 @@ function modify_words(message, link_text, dictionary) {
                 }
 
                 // Remove numbers from username.
-                if (settings_db.data.skip_over_numbers_in_usernames) {
+                if (settings_data.skip_over_numbers_in_usernames) {
                     message_fragment = maybe_remove_numbers(message_fragment);
                 }
             }
@@ -280,7 +287,7 @@ function is_user_in_db(db, user, type, get = false) {
 }
 
 function maybe_remove_numbers(message) {
-    if (!settings_db.data.skip_over_numbers_in_usernames) return message;
+    if (!settings_data.skip_over_numbers_in_usernames) return message;
     const new_message = message.replace(/\d+/g, "");
 
     // Log change.
@@ -351,19 +358,19 @@ export function parse_message(channel, data, message, is_self) {
             return allow_message();
         }
 
-        if (settings_db.data.read_broadcaster && is_broadcaster) {
+        if (settings_data.read_broadcaster && is_broadcaster) {
             return allow_message();
         }
 
-        if (settings_db.data.read_vip_users && is_vip) {
+        if (settings_data.read_vip_users && is_vip) {
             return allow_message();
         }
 
-        if (settings_db.data.read_subscribers && is_subscriber) {
+        if (settings_data.read_subscribers && is_subscriber) {
             return allow_message();
         }
 
-        if (settings_db.data.read_nonsubscribers && !is_subscriber) {
+        if (settings_data.read_nonsubscribers && !is_subscriber) {
             return allow_message();
         }
 
@@ -381,7 +388,7 @@ export function parse_message(channel, data, message, is_self) {
     tts_messages.set(messages);
 
     // Determine if message is aoe taunt.
-    const is_aoe_taunt = (settings_db.data.use_aoe_taunts && Number(message.trim()) == message.trim());
+    const is_aoe_taunt = (settings_data.use_aoe_taunts && Number(message.trim()) == message.trim());
     console.log("is_aoe_taunt:", is_aoe_taunt);
     data.is_aoe_taunt = is_aoe_taunt;
 

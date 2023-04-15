@@ -123,11 +123,11 @@
 
     function save_setting(key, value, schema) {
         // Skip same value.
-        if (settings_db.data[key] === value) return;
+        if ($settings_db.data[key] === value) return;
 
         // Save new setting.
-        settings_db.data[key] = value;
-        settings_db.write();
+        $settings_db.data[key] = value;
+        $settings_db.write();
 
         // Emit event.
         if (schema?.emit_event) {
@@ -145,7 +145,7 @@
             const {dependant_on} = schema;
             if (!dependant_on) return true;
 
-            if (settings_db.data[dependant_on]) {
+            if ($settings_db.data[dependant_on]) {
                 schema = settings_schema[dependant_on];
             } else {
                 return false;
@@ -176,7 +176,7 @@
 <h2>Settings:</h2>
 
 <ul class="-no-bullets">
-    {#each Object.entries(settings_db.data) as [key, value] (key)}
+    {#each Object.entries($settings_db.data) as [key, value] (key)}
         {@const schema = settings_schema[key]}
         {#if (schema && should_show_setting_item(schema))}
             <li class:-dependant={schema?.dependant_on} style="--depth: {get_depth(key)}">
@@ -241,7 +241,7 @@
     </Dialog>
 
     <!-- Dictionaries -->
-    {#if (settings_db.data.use_tts)}
+    {#if ($settings_db.data.use_tts)}
         <Dialog>
             <svelte:fragment slot="button-open-text">
                 Show dictionaries

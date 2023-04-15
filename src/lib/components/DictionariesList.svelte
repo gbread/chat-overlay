@@ -6,7 +6,7 @@
 
     let app_language = "en-us";
     let is_details_open = false;
-    let selected = (settings_db.data.tts_language.toLowerCase() in dictionaries) ? settings_db.data.tts_language.toLowerCase() : Object.keys(dictionaries)[0];
+    let selected = ($settings_db.data.tts_language.toLowerCase() in dictionaries) ? $settings_db.data.tts_language.toLowerCase() : Object.keys(dictionaries)[0];
 
     function select_dictionary(dictionary) {
         is_details_open = false;
