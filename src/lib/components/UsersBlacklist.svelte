@@ -2,6 +2,7 @@
     import UserBlacklistItem from "./UsersBlacklistItem.svelte";
 
     import diff from "microdiff";
+    import {klona} from "klona/json";
 
     import {users_blacklist_db} from "../db.js";
 
@@ -27,7 +28,7 @@
     }
 
     // Snapshot data.
-    let users_blacklist = structuredClone(users_blacklist_db.data);
+    let users_blacklist = klona(users_blacklist_db.data);
 
     function remove_item(index) {
         users_blacklist.splice(index, 1);
