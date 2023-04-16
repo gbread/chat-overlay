@@ -216,7 +216,7 @@ function modify_words(message, link_text, dictionary) {
                 // Change username to alias.
                 const username_alias = get_user_alias(user, "username");
                 if (username_alias) {
-                    message_fragment = `@${username_alias}`;
+                    message_fragment = `et ${username_alias}`;
                     return;
                 }
 
