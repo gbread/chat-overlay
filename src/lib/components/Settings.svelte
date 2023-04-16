@@ -86,6 +86,11 @@
             type: "boolean",
             dependant_on: "say_usernames",
         },
+        remove_mentions_at_blacklisted_users: {
+            label: "Remove mentions at blacklisted users",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
         link_text: {
             label: "Replace URL links with",
             type: "text",

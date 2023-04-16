@@ -208,7 +208,7 @@ function modify_words(message, link_text, dictionary) {
             if (message_fragment.startsWith("@")) {
                 const user = {username: message_fragment.substring(1)};
                 // Remove blacklisted username.
-                if (!is_user_whitelisted(user, "username") && is_user_blacklisted(user, "username")) {
+                if (settings_data.remove_mentions_at_blacklisted_users && (!is_user_whitelisted(user, "username") && is_user_blacklisted(user, "username"))) {
                     message_fragment = "";
                     return;
                 }

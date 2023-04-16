@@ -25,6 +25,7 @@ const settings_db_default = {
     username_separator: "says",
     username_only_link_separator: "sends",
     skip_over_numbers_in_usernames: false,
+    remove_mentions_at_blacklisted_users: false,
     link_text: "link",
     use_aoe_taunts: false,
     volume: 1,
