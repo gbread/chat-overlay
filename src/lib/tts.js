@@ -2,7 +2,7 @@ import dictionaries from "../assets/dictionaries.js";
 
 import fastq from "fastq";
 
-import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db} from "./db.js";
+import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db, users_tts_languages_db} from "./db.js";
 
 import {emitter, maybe_push, create_promise, is_url, emoji_regex} from "./utils.js";
 
@@ -89,8 +89,9 @@ const audio_queue = fastq.promise(async (task_item) => {
     }
 
     console.log("zacinam mluvit");
-    const lang = settings_data.tts_language.toLowerCase();
-    let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodeURIComponent(new_message)}`;
+    const tts_language = users_tts_languages_db.data.find((user_tts) => user_tts.user_id == user_id)?.tts_language ?? settings_data.tts_language.toLowerCase();
+    console.log('tts_language:', tts_language);
+    let audio_src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${tts_language}&client=tw-ob&q=${encodeURIComponent(new_message)}`;
 
     // Play AoE taunt.
     if (is_aoe_taunt) {
@@ -172,7 +173,6 @@ const audio_queue = fastq.promise(async (task_item) => {
     }
 
     await promise;
-    console.log("domluvil jsem");
 
     // Sleep before next
     console.log("sleep start");

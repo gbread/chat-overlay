@@ -6,6 +6,7 @@
     import UsersBlacklist from "./UsersBlacklist.svelte";
     import UsersWhitelist from "./UsersWhitelist.svelte";
     import UsersAliasesList from "./UsersAliasesList.svelte";
+    import UsersTTSLanguagesList from "./UsersTTSLanguagesList.svelte";
     import DictionariesList from "./DictionariesList.svelte";
 
     import AutoComplete from "simple-svelte-autocomplete";
@@ -170,6 +171,7 @@
     let users_blacklist_save;
     let users_whitelist_save;
     let users_aliases_save;
+    let users_tts_languages_save;
 
 </script>
 
@@ -240,8 +242,18 @@
         <UsersAliasesList slot="dialog-content" bind:save_items={users_aliases_save} />
     </Dialog>
 
-    <!-- Dictionaries -->
+    <!-- TTS-only settings -->
     {#if ($settings_db.data.use_tts)}
+        <!-- Users TTS languages. -->
+        <Dialog on_save={users_tts_languages_save}>
+            <svelte:fragment slot="button-open-text">
+                Show users TTS languages
+            </svelte:fragment>
+
+            <UsersTTSLanguagesList slot="dialog-content" bind:save_items={users_tts_languages_save} />
+        </Dialog>
+
+        <!-- Dictionaries. -->
         <Dialog>
             <svelte:fragment slot="button-open-text">
                 Show dictionaries

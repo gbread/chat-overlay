@@ -82,10 +82,16 @@ const users_aliases_db = new LowSync(new LocalStorage("users_aliases"));
 users_aliases_db.read();
 users_aliases_db.data ||= [];
 
+// Users tts languages.
+const users_tts_languages_db = new LowSync(new LocalStorage("users_tts_languages"));
+users_tts_languages_db.read();
+users_tts_languages_db.data ||= [];
+
 export {
     settings_db,
     usernames_db,
     users_blacklist_db,
     users_whitelist_db,
     users_aliases_db,
+    users_tts_languages_db,
 };
