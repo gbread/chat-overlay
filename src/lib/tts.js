@@ -189,8 +189,7 @@ audio_queue.error((error, task_item) => {
 });
 
 function modify_words(message, link_text, dictionary) {
-    console.log("message_fragments start:", message);
-    // Replace URLs.
+    // Replace URLs with user defined link text.
     let message_fragments = message.split(/\s/gi).map((message_fragments) => (is_url(message_fragments)) ? link_text : message_fragments).join(" ").trim();
     console.log("message_fragments before:", message_fragments);
 
