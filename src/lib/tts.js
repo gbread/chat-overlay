@@ -189,21 +189,19 @@ audio_queue.error((error, task_item) => {
 });
 
 function modify_words(message, link_text, dictionary) {
-    // Add space before punctuations and split message into words
-    let message_fragments = message.replace(/([.?!,]+)/gi, " $1").split(/\s/gi);
+    console.log("message_fragments start:", message);
+    // Replace URLs.
+    let message_fragments = message.split(/\s/gi).map((message_fragments) => (is_url(message_fragments)) ? link_text : message_fragments).join(" ").trim();
     console.log("message_fragments before:", message_fragments);
+
+    // Add space before punctuations and split message into words
+    message_fragments = message_fragments.replace(/([.?!,]+)/gi, " $1").split(/\s/gi);
 
     // Modify words.
     for (let i = 0; i < message_fragments.length; i++) {
         let message_fragment = message_fragments[i];
 
         (() => {
-            // URLs.
-            if (is_url(message_fragment)) {
-                message_fragment = link_text;
-                return;
-            }
-
             // Handle usernames.
             if (message_fragment.startsWith("@")) {
                 const user = {username: message_fragment.substring(1)};
@@ -248,7 +246,7 @@ function modify_words(message, link_text, dictionary) {
     }
 
     console.log("message_fragments after:", message_fragments);
-    return message_fragments.join(" ").toLowerCase();
+    return message_fragments.join(" ").trim();
 }
 
 function is_user_whitelisted(user, type) {
