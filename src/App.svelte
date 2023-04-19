@@ -69,11 +69,13 @@
 
         const handle_rejection = (event) => {
             event.preventDefault();
+            console.error(event);
             report_error(event?.reason);
         }
 
         const handle_error = (event) => {
             event.preventDefault();
+            console.error(event);
             report_error(event?.message);
         }
 
