@@ -26,19 +26,18 @@
     });
     let is_connected = false;
 
-    if ($settings_db.data.use_tts) {
-        console.log("Listening to messages");
-        client.on("message", parse_message);
+    // Listen to messages.
+    client.on("message", parse_message);
 
-        // TODO:
-        client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
-            console.log('channel: ', channel);
-            console.log('username: ', username);
-            console.log('deletedMessage: ', deletedMessage);
-            console.log('userstate: ', userstate);
-        });
-    }
+    // TODO:
+    client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
+        console.log('channel: ', channel);
+        console.log('username: ', username);
+        console.log('deletedMessage: ', deletedMessage);
+        console.log('userstate: ', userstate);
+    });
 
+    // Connect to channel.
     const connect = debounce(async (channel) => {
         if (typeof channel === "object") {
             ({channel} = channel)

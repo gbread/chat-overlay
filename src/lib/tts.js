@@ -296,7 +296,9 @@ function maybe_remove_numbers(message) {
 }
 
 export function parse_message(channel, data, message, is_self) {
-    console.log("data:", data, "message: ", message);
+    if (!settings_data.use_tts) return;
+
+    console.log("data:", data, "message:", message);
 
     const {
         "badge-info": badge_info,
@@ -330,7 +332,7 @@ export function parse_message(channel, data, message, is_self) {
     // Skip same message and sent less than 1 minutes ago.
     // TODO:
 
-    // Skip command.
+    // Skip commands.
     if (message && message.startsWith("!")) return;
 
     const is_whitelisted = {
