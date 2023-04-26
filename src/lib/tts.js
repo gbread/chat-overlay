@@ -325,6 +325,7 @@ export function parse_message(channel, data, message, is_self) {
     const is_founder = badges?.founder ?? false;
     const is_partner = badges?.partner ?? false;
     const is_prime = badges?.premium ?? false;
+    const is_hype_train = badges?.["hype-train"] ?? false;
     const user = {user_id, username};
 
     maybe_save_username(username, user_id);
