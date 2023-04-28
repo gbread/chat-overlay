@@ -9,6 +9,7 @@
     import UsersTTSLanguagesList from "./UsersTTSLanguagesList.svelte";
     import DictionariesList from "./DictionariesList.svelte";
     import SettingsExport from "./SettingsExport.svelte";
+    import SettingsImport from "./SettingsImport.svelte";
 
     import AutoComplete from "simple-svelte-autocomplete";
 
@@ -178,6 +179,7 @@
     let users_whitelist_save;
     let users_aliases_save;
     let users_tts_languages_save;
+    let settings_import_save;
 
 </script>
 
@@ -278,5 +280,14 @@
         </svelte:fragment>
 
         <SettingsExport slot="dialog-content" />
+    </Dialog>
+
+    <!-- Import settings. -->
+    <Dialog on_save={settings_import_save}>
+        <svelte:fragment slot="button-open-text">
+            Import settings
+        </svelte:fragment>
+
+        <SettingsImport slot="dialog-content" bind:save_items={settings_import_save} />
     </Dialog>
 </div>
