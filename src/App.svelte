@@ -14,7 +14,7 @@
 
     import {settings_db} from "./lib/db.js";
 
-    import {emitter, debounce} from "./lib/utils.js";
+    import {debounce} from "./lib/utils.js";
 
     import {parse_message} from "./lib/tts.js";
 
@@ -42,22 +42,33 @@
         if (typeof channel === "object") {
             ({channel} = channel)
         }
-        console.log('channel:', channel);
-        //await client?.disconnect();
+        console.log("channel:", channel, "channels:", client.getChannels());
 
         // Channel is required.
         if (!channel) return;
 
-        client.channels = [channel];
+        // Identical channel check.
+        if (client.getChannels().includes(channel.toLowerCase())) return;
 
         if (!is_connected) {
+            // Connect.
             await client.connect();
+            is_connected = true;
             console.log("connected!");
+        } else {
+            for (const old_channel of client.getChannels()) {
+                // Leave old channel.
+                await client.part(old_channel);
+            }
         }
+
+        // Join new channel.
+        await client.join(channel);
+
     }, 1500);
 
-    emitter.on("set_channel", connect);
-    connect($settings_db.data.channel);
+    // Connect to channel.
+    $: connect($settings_db.data.channel);
 
     // Detect and display error notifications.
     onMount(() => {
