@@ -8,6 +8,7 @@
     import UsersAliasesList from "./UsersAliasesList.svelte";
     import UsersTTSLanguagesList from "./UsersTTSLanguagesList.svelte";
     import DictionariesList from "./DictionariesList.svelte";
+    import SettingsExport from "./SettingsExport.svelte";
 
     import AutoComplete from "simple-svelte-autocomplete";
 
@@ -267,4 +268,15 @@
             <DictionariesList slot="dialog-content" />
         </Dialog>
     {/if}
+</div>
+
+<div>
+    <!-- Export settings. -->
+    <Dialog>
+        <svelte:fragment slot="button-open-text">
+            Export settings
+        </svelte:fragment>
+
+        <SettingsExport slot="dialog-content" />
+    </Dialog>
 </div>
