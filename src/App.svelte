@@ -42,13 +42,13 @@
         if (typeof channel === "object") {
             ({channel} = channel)
         }
-        console.log("channel:", channel, "channels:", client.getChannels());
+        console.log("channels:", client.getChannels(), "channel:", channel);
 
         // Channel is required.
         if (!channel) return;
 
         // Identical channel check.
-        if (client.getChannels().includes(channel.toLowerCase())) return;
+        if (client.getChannels().includes(`#${channel.toLowerCase()}`)) return;
 
         if (!is_connected) {
             // Connect.
