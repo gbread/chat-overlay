@@ -16,6 +16,7 @@ const settings_db_default = {
     use_tts: false,
     tts_language: "en-US",
     read_broadcaster: true,
+    read_moderators: true,
     read_vip_users: true,
     read_subscribers: true,
     read_nonsubscribers: false,

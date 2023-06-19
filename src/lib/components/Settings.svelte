@@ -43,6 +43,11 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        read_moderators: {
+            label: "Read moderators",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
         read_vip_users: {
             label: "Read VIP users",
             type: "boolean",

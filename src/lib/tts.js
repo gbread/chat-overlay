@@ -363,6 +363,10 @@ export function parse_message(channel, data, message, is_self) {
             return allow_message();
         }
 
+        if (settings_data?.read_moderators && is_mod) {
+            return allow_message();
+        }
+
         if (settings_data.read_vip_users && is_vip) {
             return allow_message();
         }
