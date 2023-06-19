@@ -218,13 +218,13 @@
                     </label>
                 {:else if (schema.type == "text")}
                     <!-- Text input. -->
-                    <div class="vertical-wrap">
+                    <div class="vertical-wrap -nowrap">
                         <span class="label">{schema.label}</span>
                         <input type="text" placeholder={schema.label} value={value} on:input={(event) => save_setting(key, event.target.value, schema)}>
                     </div>
                 {:else if (schema.type == "range")}
                     <!-- Range slider. -->
-                    <div class="vertical-wrap">
+                    <div class="vertical-wrap -nowrap">
                         {schema.label}
                         <input type="range" min={schema.min} step={schema.step} max={schema.max} {value} on:input={(event) => save_setting(key, parseFloat(event.target.value), schema)}>
                         <span class="range-value">{value.toFixed(schema?.decimals ?? 0)}</span>
@@ -232,7 +232,7 @@
                 {:else if (schema.type === "select")}
                     {@const set_language = (value) => languages[app_language].find((language) => language.code.toLowerCase() === value.toLowerCase())}
 
-                    <div class="vertical-wrap">
+                    <div class="vertical-wrap -nowrap">
                         {schema.label}
                         <AutoComplete items={languages[app_language]} labelFieldName="name" placeholder={schema.label} selectedItem={set_language(value)} onChange={(data) => save_setting(key, data.code, schema)} />
                     </div>

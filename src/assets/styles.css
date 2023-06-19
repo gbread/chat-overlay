@@ -30,6 +30,9 @@ hr {
     align-items: center;
     column-gap: 10px;
 }
+.vertical-wrap.-nowrap {
+    white-space: nowrap;
+}
 .vertical-wrap input {
     margin-bottom: 0;
 }
