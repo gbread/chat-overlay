@@ -68,6 +68,14 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        read_sub_gifters_over: {
+            label: "Read sub gifters over and including",
+            type: "range",
+            min: "1",
+            step: "1",
+            max: "1000",
+            dependant_on: "use_tts",
+        },
         remove_twitch_emotes: {
             label: "Remove Twitch emotes",
             type: "boolean",

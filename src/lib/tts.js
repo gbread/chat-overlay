@@ -383,6 +383,13 @@ export function parse_message(channel, data, message, is_self) {
             return allow_message();
         }
 
+        if (is_sub_gifter) {
+            const subs_gifted = Number(is_sub_gifter) || 0;
+            if (subs_gifted >= settings_data?.read_sub_gifters_over) {
+                return allow_message();
+            }
+        }
+
     })();
 
     // Maybe bail out.
