@@ -379,6 +379,10 @@ export function parse_message(channel, data, message, is_self) {
             return allow_message();
         }
 
+        if (settings_data?.read_partners && is_partner) {
+            return allow_message();
+        }
+
     })();
 
     // Maybe bail out.

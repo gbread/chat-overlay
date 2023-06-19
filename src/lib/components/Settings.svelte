@@ -63,6 +63,11 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        read_partners: {
+            label: "Read Twitch partners",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
         remove_twitch_emotes: {
             label: "Remove Twitch emotes",
             type: "boolean",

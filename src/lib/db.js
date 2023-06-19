@@ -20,6 +20,7 @@ const settings_db_default = {
     read_vip_users: true,
     read_subscribers: true,
     read_nonsubscribers: false,
+    read_partners: true,
     remove_twitch_emotes: true,
     skip_emote_only_messages: true,
     say_usernames: true,
