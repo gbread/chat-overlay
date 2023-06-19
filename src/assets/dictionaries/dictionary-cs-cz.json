@@ -90,6 +90,8 @@
     "nahore": "nahoře",
     "rekl": "řekl",
     "rekla": "řekla",
+    "rekne": "řekne",
+    "nojo": "no jo",
     "nj": "no jo",
     "njn": "nojono",
     "kamarad": "kamarád",
@@ -107,6 +109,7 @@
     "snipnem": "snajpnem",
     "sniper": "snajpr",
     "snipnout": "snajpnout",
+    "nesnipnul": "nesnajpnul",
     "tzn": "to znamená",
     "chat": "čet",
     "jake": "jaké",
@@ -140,5 +143,11 @@
     "dnf": "dé en ef",
     "tv": "tévé",
     "op": "oopé",
-    "kurde": "kur de"
+    "kurde": "kur de",
+    "panejo": "pane jo",
+    "lode": "lodě",
+    "grind": "grajnt",
+    "traduju": "trejduju",
+    "skore": "skóre",
+    "nsfw": "NSFW"
 }
