@@ -42,7 +42,6 @@
         if (typeof channel === "object") {
             ({channel} = channel)
         }
-        console.log("channels:", client.getChannels(), "channel:", channel);
 
         // Channel is required.
         if (!channel) return;
@@ -54,16 +53,17 @@
             // Connect.
             await client.connect();
             is_connected = true;
-            console.log("connected!");
         } else {
             for (const old_channel of client.getChannels()) {
                 // Leave old channel.
                 await client.part(old_channel);
+                console.log("Left channel", old_channel);
             }
         }
 
         // Join new channel.
         await client.join(channel);
+        console.log("Joined channel", channel);
 
     }, 1500);
 
