@@ -127,6 +127,7 @@
             min: "0.0",
             step: "0.01",
             max: "1.0",
+            decimals: 2,
             emit_event: "audio_change_volume",
             dependant_on: "use_tts",
         },
@@ -136,6 +137,7 @@
             min: "0.1",
             step: "0.01",
             max: "2.5",
+            decimals: 2,
             emit_event: "audio_change_speed",
             dependant_on: "use_tts",
         },
@@ -225,7 +227,7 @@
                     <div class="vertical-wrap">
                         {schema.label}
                         <input type="range" min={schema.min} step={schema.step} max={schema.max} {value} on:input={(event) => save_setting(key, parseFloat(event.target.value), schema)}>
-                        <span class="range-value">{value.toFixed(2)}</span>
+                        <span class="range-value">{value.toFixed(schema?.decimals ?? 0)}</span>
                     </div>
                 {:else if (schema.type === "select")}
                     {@const set_language = (value) => languages[app_language].find((language) => language.code.toLowerCase() === value.toLowerCase())}
