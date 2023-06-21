@@ -441,3 +441,16 @@ function maybe_save_username(username, user_id) {
     usernames_db.data[user_id] = username;
     usernames_db.write();
 }
+
+export function skip_or_remove_message(message_id) {
+    const message_index = messages.findIndex((m) => m.id === message_id);
+
+    if (message_index > 0) {
+        // Remove this message.
+        messages = messages.filter((m) => m.id !== message_id);
+        tts_messages.set(messages);
+    } else {
+        // Stop (skip) this message.
+        emitter.emit("tts_stop_audio");
+    }
+}

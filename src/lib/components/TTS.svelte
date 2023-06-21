@@ -1,7 +1,5 @@
 <script>
-    import {emitter} from "../utils.js";
-
-    import {test_message} from "../tts.js";
+    import {test_message, skip_or_remove_message} from "../tts.js";
 
     import {tts_messages, tts_errors} from "../stores.js";
 
@@ -93,15 +91,7 @@
                     {message.text}
 
                     <!-- Skip / Remove button. -->
-                    <button class="btn-small" on:click={() => {
-                        if (index > 0) {
-                            // Remove this message.
-                            $tts_messages = $tts_messages.filter((m) => m.id !== message.id);
-                        } else {
-                            // Stop this message.
-                            emitter.emit("tts_stop_audio");
-                        }
-                    }}>
+                    <button class="btn-small" on:click={skip_or_remove_message(message.id)}>
                         {#if (index > 0)}
                             remove
                         {:else}

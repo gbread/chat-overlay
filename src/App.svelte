@@ -16,7 +16,7 @@
 
     import {debounce} from "./lib/utils.js";
 
-    import {parse_message} from "./lib/tts.js";
+    import {parse_message, skip_or_remove_message} from "./lib/tts.js";
 
     let show_settings = false;
     let show_tts = false;
@@ -29,12 +29,12 @@
     // Listen to messages.
     client.on("message", parse_message);
 
-    // TODO:
-    client.on("messagedeleted", (channel, username, deletedMessage, userstate) => {
-        console.log('channel: ', channel);
-        console.log('username: ', username);
-        console.log('deletedMessage: ', deletedMessage);
-        console.log('userstate: ', userstate);
+    // Skip or remove deleted messages.
+    client.on("messagedeleted", (channel, username, deleted_message, data) => {
+        console.log("deleted data:", data, "username:", username);
+        const {"target-msg-id": message_id} = data;
+
+        skip_or_remove_message(message_id);
     });
 
     // Connect to channel.
