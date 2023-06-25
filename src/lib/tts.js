@@ -22,6 +22,60 @@ tts_errors.subscribe(($errors) => errors = $errors);
 
 let previous_username = null;
 
+const audio = new Audio();
+
+// Audio volume.
+emitter.on("audio_change_volume", ({volume}) => {
+    audio.volume = volume;
+});
+
+// Audio speed.
+emitter.on("audio_change_speed", ({speed}) => {
+    audio.playbackRate = speed;
+});
+
+// Audio preserve pitch.
+emitter.on("audio_change_preserves_pitch", ({preserve_pitch}) => {
+    audio.preservesPitch = preserve_pitch;
+});
+
+// Can play through event.
+audio.addEventListener("canplaythrough", (event) => {
+    console.log("audio can play");
+    audio.play().catch((error) => {
+        console.error("NO PLAY! ", error);
+        console.error("AUDIO ERROR?", audio.error);
+        console.error(audio.src);
+        tts_errors.set(maybe_push(errors, error, 5));
+        emitter.emit("audio_queue_continue");
+    });
+});
+
+// Ended event.
+audio.addEventListener("ended", (event) => {
+    console.log("audio ended", audio.src);
+    emitter.emit("audio_queue_continue");
+});
+
+// Stop audio on event.
+emitter.on("tts_stop_audio", () => {
+    audio.pause();
+    emitter.emit("audio_queue_continue");
+});
+
+// Error event.
+audio.addEventListener("error", async (error) => {
+    const error_types = {
+        "1": "MEDIA_ERR_ABORTED",
+        "2": "MEDIA_ERR_NETWORK",
+        "3": "MEDIA_ERR_DECODE",
+        "4": "MEDIA_ERR_SRC_NOT_SUPPORTED",
+    };
+
+    tts_errors.set(maybe_push(errors, `[${new Date().toLocaleString()}] ${error_types[audio?.error?.code]}`, 5));
+    emitter.emit("audio_queue_continue");
+});
+
 // Audio queue.
 const audio_queue = fastq.promise(async (task_item) => {
     const {"badge-info": badge_info, badges, color, "custom-reward-id": custom_reward_id, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, "user-id": user_id, username} = task_item;
@@ -105,72 +159,16 @@ const audio_queue = fastq.promise(async (task_item) => {
         }
     }
 
-    try {
-        // TODO: move outside to prevent memory leak.
-        const audio = new Audio(audio_src);
+    // Set audio settings.
+    audio.src = audio_src;
+    audio.volume = settings_data.volume;
+    audio.playbackRate = settings_data.speed;
+    audio.preservesPitch = settings_data.preserve_pitch;
 
-        // Audio volume.
-        audio.volume = settings_data.volume;
-        emitter.on("audio_change_volume", ({volume}) => {
-            audio.volume = volume;
-        });
-
-        // Audio speed.
-        audio.playbackRate = settings_data.speed;
-        emitter.on("audio_change_speed", ({speed}) => {
-            audio.playbackRate = speed;
-        });
-
-        // Audio preserve pitch.
-        audio.preservesPitch = settings_data.preserve_pitch;
-        emitter.on("audio_change_preserves_pitch", ({preserve_pitch}) => {
-            audio.preservesPitch = preserve_pitch;
-        });
-
-        // Can play through event.
-        audio.addEventListener("canplaythrough", (event) => {
-            console.log("audio play");
-            audio.play().catch((error) => {
-                console.error("NO PLAY! ", error);
-                console.error("AUDIO ERROR?", audio.error);
-                console.error(audio.src);
-                tts_errors.set(maybe_push(errors, error, 5));
-                resolve();
-            });
-        });
-
-        // Ended event.
-        audio.addEventListener("ended", (event) => {
-            console.log("audio ended", audio.src);
-            audio.remove();
-            resolve();
-        });
-
-        // Stop audio on event.
-        emitter.on("tts_stop_audio", () => {
-            audio.pause();
-            audio.remove();
-            resolve();
-        });
-
-        // Error event.
-        audio.addEventListener("error", async (error) => {
-            const error_types = {
-                "1": "MEDIA_ERR_ABORTED",
-                "2": "MEDIA_ERR_NETWORK",
-                "3": "MEDIA_ERR_DECODE",
-                "4": "MEDIA_ERR_SRC_NOT_SUPPORTED",
-            };
-
-            tts_errors.set(maybe_push(errors, `[${new Date().toLocaleString()}] ${error_types[audio?.error?.code]}`, 5));
-            resolve();
-        });
-
-    } catch (error) {
+    // Continue queue.
+    emitter.on("audio_queue_continue", () => {
         resolve();
-        console.log("ERRRROROR", error);
-        tts_errors.set(maybe_push(errors, error, 5));
-    }
+    });
 
     await promise;
 
