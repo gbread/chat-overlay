@@ -39,6 +39,14 @@ emitter.on("audio_change_preserves_pitch", ({preserve_pitch}) => {
     audio.preservesPitch = preserve_pitch;
 });
 
+// Set audio settings and play.
+emitter.on("audio_play", ({audio_src}) => {
+    audio.src = audio_src;
+    audio.volume = settings_data.volume;
+    audio.playbackRate = settings_data.speed;
+    audio.preservesPitch = settings_data.preserve_pitch;
+});
+
 // Can play through event.
 audio.addEventListener("canplaythrough", (event) => {
     console.log("audio can play");
@@ -159,11 +167,8 @@ const audio_queue = fastq.promise(async (task_item) => {
         }
     }
 
-    // Set audio settings.
-    audio.src = audio_src;
-    audio.volume = settings_data.volume;
-    audio.playbackRate = settings_data.speed;
-    audio.preservesPitch = settings_data.preserve_pitch;
+    // Play audio.
+    emitter.emit("audio_play", {audio_src});
 
     // Continue queue.
     emitter.on("audio_queue_continue", () => {
