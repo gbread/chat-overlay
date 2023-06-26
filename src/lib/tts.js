@@ -86,7 +86,7 @@ audio.addEventListener("error", async (error) => {
 
 // Audio queue.
 const audio_queue = fastq.promise(async (task_item) => {
-    const {"badge-info": badge_info, badges, color, "custom-reward-id": custom_reward_id, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, "user-id": user_id, username} = task_item;
+    const {"badge-info": badge_info, badges, color, "custom-reward-id": custom_reward_id, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, "user-id": user_id, username, "reply-parent-user-login": reply_username} = task_item;
     let {message} = task_item;
 
     // Skip deleted message.
@@ -122,6 +122,11 @@ const audio_queue = fastq.promise(async (task_item) => {
 
     const link_text = settings_data.link_text;
 
+    // Remove unwanted "@username" at start of reply messages.
+    if (settings_data.say_usernames && reply_username && message.toLowerCase().startsWith(`@${reply_username.toLowerCase()} `)) {
+        message = message.substring(reply_username.length + 2);
+    }
+
     let new_message = modify_words(message.toLowerCase(), link_text, dictionaries[settings_data.tts_language.toLowerCase()]);
     console.log("new_message:", new_message);
 
@@ -137,10 +142,20 @@ const audio_queue = fastq.promise(async (task_item) => {
         new_username = maybe_remove_numbers(modify_words(username, link_text));
     }
 
-    // Say name.
-    if (new_message === link_text) {
+    if (settings_data.say_usernames && reply_username) {
+        // Modify reply username.
+        let new_reply_username = get_user_alias({username: reply_username}, "username");
+        if (!new_reply_username) {
+            new_reply_username = maybe_remove_numbers(modify_words(reply_username, link_text));
+        }
+
+        // Say reply.
+        new_message = `${new_username} ${settings_data.reply_separator} ${new_reply_username}: ${new_message}`;
+    } else if (new_message === link_text) {
+        // Link only.
         new_message = `${new_username} ${settings_data.username_only_link_separator} ${link_text}`;
     } else if (settings_data.say_usernames && say_name) {
+        // Say name.
         new_message = `${new_username} ${settings_data.username_separator} ${new_message}`;
     }
 
@@ -149,6 +164,8 @@ const audio_queue = fastq.promise(async (task_item) => {
         messages[message_index].text = `${new_message} (${message})`;
         tts_messages.set(messages);
     }
+
+    console.log("tts message:", new_message);
 
     console.log("zacinam mluvit");
     const tts_language = users_tts_languages_db.data.find((user_tts) => user_tts.user_id == user_id)?.tts_language ?? settings_data.tts_language.toLowerCase();
