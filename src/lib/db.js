@@ -26,6 +26,7 @@ const settings_db_default = {
     skip_emote_only_messages: true,
     say_usernames: true,
     username_separator: "says",
+    question_separator: "asks",
     reply_separator: "replies to",
     username_only_link_separator: "sends",
     skip_over_numbers_in_usernames: false,

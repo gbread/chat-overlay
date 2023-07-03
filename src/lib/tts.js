@@ -142,6 +142,8 @@ const audio_queue = fastq.promise(async (task_item) => {
         new_username = maybe_remove_numbers(modify_words(username, link_text));
     }
 
+    const is_question = new_message.includes("?");
+
     if (settings_data.say_usernames && reply_username) {
         // Modify reply username.
         let new_reply_username = get_user_alias({username: reply_username}, "username");
@@ -154,6 +156,9 @@ const audio_queue = fastq.promise(async (task_item) => {
     } else if (new_message === link_text) {
         // Link only.
         new_message = `${new_username} ${settings_data.username_only_link_separator} ${link_text}`;
+    } else if (settings_data.say_usernames && is_question) {
+        // Add question separator.
+        new_message = `${new_username} ${settings_data.question_separator} ${new_message}`;
     } else if (settings_data.say_usernames && say_name) {
         // Say name.
         new_message = `${new_username} ${settings_data.username_separator} ${new_message}`;

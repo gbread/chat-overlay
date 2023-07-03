@@ -96,6 +96,11 @@
             type: "text",
             dependant_on: "say_usernames",
         },
+        question_separator: {
+            label: "Separator before question",
+            type: "text",
+            dependant_on: "say_usernames",
+        },
         reply_separator: {
             label: "Separator before reply",
             type: "text",
