@@ -92,7 +92,7 @@
             dependant_on: "use_tts",
         },
         username_separator: {
-            label: "Separator after username",
+            label: "Separator before message",
             type: "text",
             dependant_on: "say_usernames",
         },
@@ -107,7 +107,7 @@
             dependant_on: "say_usernames",
         },
         username_only_link_separator: {
-            label: "Separator after only link",
+            label: "Separator before only link",
             type: "text",
             dependant_on: "say_usernames",
         },
