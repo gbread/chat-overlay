@@ -71,9 +71,7 @@
         read_sub_gifters_over: {
             label: "Read sub gifters over and including",
             type: "range",
-            min: "1",
-            step: "1",
-            max: "1000",
+            custom_values: [1, 5, 10, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 2000, 3000, 4000, 5000],
             dependant_on: "use_tts",
         },
         remove_twitch_emotes: {
@@ -236,7 +234,11 @@
                     <!-- Range slider. -->
                     <div class="vertical-wrap -nowrap">
                         {schema.label}
-                        <input type="range" min={schema.min} step={schema.step} max={schema.max} {value} on:input={(event) => save_setting(key, parseFloat(event.target.value), schema)}>
+                        {#if (schema?.custom_values)}
+                            <input type="range" min={0} step={1} max={schema.custom_values.length - 1} value={schema.custom_values.indexOf(Number(value))} on:input={(event) => save_setting(key, parseFloat(schema.custom_values[Number(event.target.value)]), schema)}>
+                        {:else}
+                            <input type="range" min={schema.min} step={schema.step} max={schema.max} {value} on:input={(event) => save_setting(key, parseFloat(event.target.value), schema)}>
+                        {/if}
                         <span class="range-value">{value.toFixed(schema?.decimals ?? 0)}</span>
                     </div>
                 {:else if (schema.type === "select")}
