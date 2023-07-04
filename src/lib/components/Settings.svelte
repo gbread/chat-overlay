@@ -79,6 +79,16 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        remove_ffz_emotes: {
+            label: "Remove FrankerFaceZ emotes",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
+        remove_bttv_emotes: {
+            label: "Remove BetterTTV emotes",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
         skip_emote_only_messages: {
             label: "Skip emote-only messages",
             type: "boolean",

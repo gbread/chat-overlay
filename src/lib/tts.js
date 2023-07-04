@@ -4,9 +4,9 @@ import fastq from "fastq";
 
 import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db, users_tts_languages_db} from "./db.js";
 
-import {emitter, maybe_push, create_promise, is_url, emoji_regex} from "./utils.js";
+import {emitter, maybe_push, create_promise, is_url, emoji_regex, index_of_all} from "./utils.js";
 
-import {tts_messages, tts_errors} from "./stores.js";
+import {tts_messages, tts_errors, channel_emotes as channel_emotes_store} from "./stores.js";
 
 // Settings data.
 let settings_data = {};
@@ -19,6 +19,10 @@ tts_messages.subscribe(($messages) => messages = $messages);
 // Errors.
 let errors = [];
 tts_errors.subscribe(($errors) => errors = $errors);
+
+// Channel emotes.
+let channel_emotes = {};
+channel_emotes_store.subscribe(($channel_emotes_store) => channel_emotes = $channel_emotes_store);
 
 let previous_username = null;
 
@@ -109,15 +113,19 @@ const audio_queue = fastq.promise(async (task_item) => {
 
     // Remove all Twitch emotes.
     if (settings_data.remove_twitch_emotes && emotes) {
-        const character_to_remove = "|";
-        for (const coordinates of Object.values(emotes)) {
-            coordinates.forEach((coordinate) => {
-                const [from, to] = coordinate.split("-");
-                const coordinates_regex = new RegExp(`(?<=^.{${from}}).{${to-from+1}}`, "g");
-                message = message.replace(coordinates_regex, character_to_remove.repeat(to - from + 1));
-            });
-        }
-        message = message.replaceAll(character_to_remove, "");
+        message = remove_emotes(message, settings_data.channel, "twitch", emotes);
+    }
+
+    // Remove all FFZ emotes.
+    if (settings_data?.remove_ffz_emotes) {
+        message = remove_emotes(message, "global", "ffz");
+        message = remove_emotes(message, settings_data.channel, "ffz");
+    }
+
+    // Remove all BTTV emotes.
+    if (settings_data?.remove_bttv_emotes) {
+        message = remove_emotes(message, "global", "bttv");
+        message = remove_emotes(message, settings_data.channel, "bttv");
     }
 
     const link_text = settings_data.link_text;
@@ -478,4 +486,46 @@ export function skip_or_remove_message(message_id) {
         // Stop (skip) this message.
         emitter.emit("tts_stop_audio");
     }
+}
+
+function remove_emotes(message, channel, type, emote_coordinates) {
+    if (!emote_coordinates) {
+        emote_coordinates = get_emote_coordinates(message, channel, type);
+    }
+
+    if (Object.keys(emote_coordinates).length < 1) return message;
+
+    const character_to_remove = "|";
+
+    // Replace all occurences of emotes with our helper character.
+    for (const coordinates of Object.values(emote_coordinates)) {
+        coordinates.forEach((coordinate) => {
+            const [from, to] = coordinate.split("-");
+            const coordinates_regex = new RegExp(`(?<=^.{${from}}).{${to-from+1}}`, "g");
+
+            message = message.replace(coordinates_regex, character_to_remove.repeat(to - from + 1));
+        });
+    }
+
+    // Get rid of helper character.
+    message = message.replaceAll(character_to_remove, "");
+
+    return message;
+}
+
+function get_emote_coordinates(message, channel, type) {
+    const coordinates = {};
+
+    if (!channel_emotes?.[channel]?.[type]) return coordinates;
+
+    // Prepare coordinates of emotes.
+    for (const emote of channel_emotes[channel][type]) {
+        const indexes = index_of_all(message, emote);
+        if (indexes.length < 1) continue;
+
+        // Find beginning and end of emotes.
+        coordinates[emote] = indexes.map((index) => `${index}-${index + emote.length - 1}`);
+    }
+
+    return coordinates;
 }

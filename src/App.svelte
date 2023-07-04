@@ -14,7 +14,7 @@
 
     import {settings_db} from "./lib/db.js";
 
-    import {debounce} from "./lib/utils.js";
+    import {debounce, get_emotes} from "./lib/utils.js";
 
     import {parse_message, skip_or_remove_message} from "./lib/tts.js";
 
@@ -35,6 +35,12 @@
         const {"target-msg-id": message_id} = data;
 
         skip_or_remove_message(message_id);
+    });
+
+    // Upon joining a channel, get its emotes.
+    client.on("roomstate", (channel, state) => {
+        console.log("room state:", state);
+        get_emotes(channel.replace("#", ""), state?.["room-id"]);
     });
 
     // Connect to channel.

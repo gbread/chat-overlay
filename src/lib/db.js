@@ -23,6 +23,8 @@ const settings_db_default = {
     read_partners: true,
     read_sub_gifters_over: 10,
     remove_twitch_emotes: true,
+    remove_ffz_emotes: true,
+    remove_bttv_emotes: true,
     skip_emote_only_messages: true,
     say_usernames: true,
     username_separator: "says",
