@@ -87,6 +87,12 @@ export async function get_emotes(channel, user_id) {
         store_emotes("bttv", "global", user_id);
         store_emotes("bttv", channel, user_id);
     }
+
+    // Store 7TV emotes.
+    if (settings.data?.remove_7tv_emotes) {
+        store_emotes("7tv", "global", user_id);
+        store_emotes("7tv", channel, user_id);
+    }
 }
 
 async function store_emotes(type, channel, user_id) {
@@ -107,6 +113,12 @@ async function store_emotes(type, channel, user_id) {
             url = "https://api.frankerfacez.com/v1/set/global";
         } else {
             url = `https://api.frankerfacez.com/v1/room/id/${user_id}`;
+        }
+    } else if (type === "7tv") {
+        if (channel === "global") {
+            url = "https://api.7tv.app/v2/emotes/global";
+        } else {
+            url = `https://api.7tv.app/v2/users/${user_id}/emotes`;
         }
     }
 
@@ -139,6 +151,10 @@ async function store_emotes(type, channel, user_id) {
     } else if (type === "ffz" && json?.sets) {
         emotes = [
             ...Object.values(json.sets).map((set) => set.emoticons.map((emote) => emote.name)).flat(),
+        ];
+    } else if (type === "7tv" && Array.isArray(json)) {
+        emotes = [
+            ...json.map((emote) => emote.name),
         ];
     }
 

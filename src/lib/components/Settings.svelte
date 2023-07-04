@@ -89,6 +89,11 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        remove_7tv_emotes: {
+            label: "Remove 7TV emotes",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
         skip_emote_only_messages: {
             label: "Skip emote-only messages",
             type: "boolean",

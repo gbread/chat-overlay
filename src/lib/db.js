@@ -25,6 +25,7 @@ const settings_db_default = {
     remove_twitch_emotes: true,
     remove_ffz_emotes: true,
     remove_bttv_emotes: true,
+    remove_7tv_emotes: true,
     skip_emote_only_messages: true,
     say_usernames: true,
     username_separator: "says",

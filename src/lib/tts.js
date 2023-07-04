@@ -128,6 +128,12 @@ const audio_queue = fastq.promise(async (task_item) => {
         message = remove_emotes(message, settings_data.channel, "bttv");
     }
 
+    // Remove all 7TV emotes.
+    if (settings_data?.remove_7tv_emotes) {
+        message = remove_emotes(message, "global", "7tv");
+        message = remove_emotes(message, settings_data.channel, "7tv");
+    }
+
     const link_text = settings_data.link_text;
 
     // Remove unwanted "@username" at start of reply messages.
