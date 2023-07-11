@@ -232,8 +232,8 @@ function modify_words(message, link_text, dictionary) {
     let message_fragments = message.split(/\s/gi).map((message_fragments) => (is_url(message_fragments)) ? link_text : message_fragments).join(" ").trim();
     console.log("message_fragments before:", message_fragments);
 
-    // Add space before punctuations and split message into words
-    message_fragments = message_fragments.replace(/([.?!,]+)/gi, " $1").split(/\s/gi);
+    // Add space before punctuations and split message into words (only if its not before non-number and is not after another punctuation or white space).
+    message_fragments = message_fragments.replace(/(\D)([.?!,]+)([^.?!,\s])/gi, "$1$2 $3").split(/\s/gi);
 
     // Modify words.
     for (let i = 0; i < message_fragments.length; i++) {
@@ -273,8 +273,8 @@ function modify_words(message, link_text, dictionary) {
             // Remove underscores.
             message_fragment = message_fragment.replaceAll("_", " ");
 
-            // Add space before number.
-            message_fragment = message_fragment.replace(/(\d+)/gi, " $1");
+            // Add space before number (except for decimals).
+            message_fragment = message_fragment.replace(/([^-\d][\d]+[,.][\d]+?)/gi, " $1");
 
             // Remove Emojis.
             message_fragment = message_fragment.replace(emoji_regex(), "");
