@@ -365,6 +365,7 @@ export function parse_message(channel, data, message, is_self) {
     const is_partner = badges?.partner ?? false;
     const is_prime = badges?.premium ?? false;
     const is_hype_train = badges?.["hype-train"] ?? false;
+    const is_sub_gift_leader = badges?.["sub-gift-leader"] ?? false;
     const is_sub_gifter = badges?.["sub-gifter"] ?? false;
     const user = {user_id, username};
 
@@ -419,6 +420,10 @@ export function parse_message(channel, data, message, is_self) {
         }
 
         if (settings_data?.read_partners && is_partner) {
+            return allow_message();
+        }
+
+        if (settings_data?.read_sub_gift_leaders && is_sub_gift_leader) {
             return allow_message();
         }
 
