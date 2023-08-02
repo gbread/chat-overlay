@@ -367,6 +367,7 @@ export function parse_message(channel, data, message, is_self) {
     const is_hype_train = badges?.["hype-train"] ?? false;
     const is_sub_gift_leader = badges?.["sub-gift-leader"] ?? false;
     const is_sub_gifter = badges?.["sub-gifter"] ?? false;
+    const is_bits_leader = badges?.["bits-leader"] ?? false;
     const user = {user_id, username};
 
     maybe_save_username(username, user_id);
@@ -424,6 +425,10 @@ export function parse_message(channel, data, message, is_self) {
         }
 
         if (settings_data?.read_sub_gift_leaders && is_sub_gift_leader) {
+            return allow_message();
+        }
+
+        if (settings_data?.read_bit_leaders && is_bits_leader) {
             return allow_message();
         }
 

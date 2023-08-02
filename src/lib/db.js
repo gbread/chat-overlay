@@ -22,6 +22,7 @@ const settings_db_default = {
     read_nonsubscribers: false,
     read_partners: true,
     read_sub_gift_leaders: true,
+    read_bit_leaders: true,
     read_sub_gifters_over: 10,
     remove_twitch_emotes: true,
     remove_ffz_emotes: true,

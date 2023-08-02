@@ -73,6 +73,11 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        read_bit_leaders: {
+            label: "Read bit leaders",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
         read_sub_gifters_over: {
             label: "Read sub gifters over and including",
             type: "range",
