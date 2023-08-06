@@ -1,5 +1,5 @@
 <script>
-    import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db, users_tts_languages_db} from "../db.js";
+    import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db, users_tts_languages_db, channel_point_rewards_whitelist_db} from "../db.js";
 
     const all_data = {
         settings: $settings_db.data,
@@ -8,6 +8,7 @@
         users_whitelist: users_whitelist_db.data,
         users_aliases: users_aliases_db.data,
         users_tts_languages: users_tts_languages_db.data,
+        channel_point_rewards_whitelist: channel_point_rewards_whitelist_db.data,
     };
 
     let button_el;
