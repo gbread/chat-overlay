@@ -8,6 +8,7 @@
     import UsersAliasesList from "./UsersAliasesList.svelte";
     import UsersTTSLanguagesList from "./UsersTTSLanguagesList.svelte";
     import DictionariesList from "./DictionariesList.svelte";
+    import ChannelPointRewardsList from "./ChannelPointRewardsList.svelte";
     import SettingsExport from "./SettingsExport.svelte";
     import SettingsImport from "./SettingsImport.svelte";
 
@@ -232,6 +233,7 @@
     let users_whitelist_save;
     let users_aliases_save;
     let users_tts_languages_save;
+    let channel_point_rewards_save;
     let settings_import_save;
 
 </script>
@@ -325,6 +327,15 @@
             </svelte:fragment>
 
             <DictionariesList slot="dialog-content" />
+        </Dialog>
+
+        <!-- Channel point rewards. -->
+        <Dialog on_save={channel_point_rewards_save}>
+            <svelte:fragment slot="button-open-text">
+                Show channel point rewards
+            </svelte:fragment>
+
+            <ChannelPointRewardsList slot="dialog-content" bind:save_items={channel_point_rewards_save} />
         </Dialog>
     {/if}
 </div>

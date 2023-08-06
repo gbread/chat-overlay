@@ -2,7 +2,7 @@ import dictionaries from "../assets/dictionaries.js";
 
 import fastq from "fastq";
 
-import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db, users_tts_languages_db} from "./db.js";
+import {settings_db, usernames_db, users_blacklist_db, users_whitelist_db, users_aliases_db, users_tts_languages_db, channel_point_rewards_whitelist_db} from "./db.js";
 
 import {emitter, maybe_push, create_promise, is_url, emoji_regex, index_of_all} from "./utils.js";
 
@@ -437,6 +437,11 @@ export function parse_message(channel, data, message, is_self) {
             if (subs_gifted >= settings_data?.read_sub_gifters_over) {
                 return allow_message();
             }
+        }
+
+        // Allow whitelisted channel point rewards.
+        if (custom_reward_id && channel_point_rewards_whitelist_db.data.find((reward) => reward.reward_id === custom_reward_id)) {
+            return allow_message();
         }
 
     })();

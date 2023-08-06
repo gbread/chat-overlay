@@ -98,6 +98,11 @@ const users_tts_languages_db = new LowSync(new LocalStorage("users_tts_languages
 users_tts_languages_db.read();
 users_tts_languages_db.data ||= [];
 
+// Channel point rewards whitelist.
+const channel_point_rewards_whitelist_db = new LowSync(new LocalStorage("channel_point_rewards_whitelist"));
+channel_point_rewards_whitelist_db.read();
+channel_point_rewards_whitelist_db.data ||= [];
+
 export {
     settings_db,
     usernames_db,
@@ -105,4 +110,5 @@ export {
     users_whitelist_db,
     users_aliases_db,
     users_tts_languages_db,
+    channel_point_rewards_whitelist_db,
 };
