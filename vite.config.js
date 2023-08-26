@@ -10,4 +10,7 @@ export default defineConfig({
     server: {
         hmr: false,
     },
+    test: {
+        environment: "jsdom",
+    },
 });
