@@ -273,8 +273,8 @@ function modify_words(message, link_text, dictionary) {
             // Remove underscores.
             message_fragment = message_fragment.replaceAll("_", " ");
 
-            // Add space before number (except for decimals).
-            message_fragment = message_fragment.replace(/([^-\d][\d]+[,.][\d]+?)/gi, " $1");
+            // Add spaces before and or after numbers, decimals, negative and plus too.
+            message_fragment = message_fragment.replace(/([a-z-+]?)(\d*[,.]?\d+)([a-z-+]?)/gi, (match, p1, p2, p3) => (p1 === "-" || p1 === "+") ? ` ${p1}${p2} ${p3}` : `${p1} ${p2} ${p3}`).replace(/\s{2,}/g, " ").trim();
 
             // Remove Emojis.
             message_fragment = message_fragment.replace(emoji_regex(), "");
