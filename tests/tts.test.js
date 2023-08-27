@@ -133,5 +133,23 @@ describe("modifying words", () => {
         test("dictionary missing accent characters", () => {
             expect(modify_words("afrikac", link_text, dictionary)).toBe("afrikáč");
         });
+
+        describe("dictionary punctuation", () => {
+            test("dictionary abbreviation", () => {
+                expect(modify_words("atd.", link_text, dictionary)).toBe("a tak dále.");
+            });
+
+            test("dictionary slang", () => {
+                expect(modify_words("jj,", link_text, dictionary)).toBe("jojo,");
+            });
+
+            test("dictionary better pronounciation", () => {
+                expect(modify_words("vysere!", link_text, dictionary)).toBe("vy sere!");
+            });
+
+            test("dictionary missing accent characters", () => {
+                expect(modify_words("afrikac?", link_text, dictionary)).toBe("afrikáč?");
+            });
+        });
     });
 });
