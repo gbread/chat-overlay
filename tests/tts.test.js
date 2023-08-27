@@ -33,8 +33,14 @@ describe("modifying words", () => {
         expect(modify_words("co_to")).toBe("co to");
     });
 
-    test("removed emojis", () => {
-        expect(modify_words("co😎to")).toBe("coto");
+    describe("emojis", () => {
+        test("removed emojis", () => {
+            expect(modify_words("co😎to")).toBe("coto");
+        });
+
+        test("removed all emojis", () => {
+            expect(modify_words("😎👍🤷‍♂️")).toBe("");
+        });
     });
 
     describe("space after", () => {
@@ -42,16 +48,32 @@ describe("modifying words", () => {
             expect(modify_words("co?to")).toBe("co? to");
         });
 
+        test("space after many ?", () => {
+            expect(modify_words("co???to")).toBe("co??? to");
+        });
+
         test("space after !", () => {
             expect(modify_words("co!to")).toBe("co! to");
+        });
+
+        test("space after many !", () => {
+            expect(modify_words("co!!!to")).toBe("co!!! to");
         });
 
         test("space after .", () => {
             expect(modify_words("co.to")).toBe("co. to");
         });
 
+        test("space after many .", () => {
+            expect(modify_words("co...to")).toBe("co... to");
+        });
+
         test("space after ,", () => {
             expect(modify_words("co,to")).toBe("co, to");
+        });
+
+        test("space after many ,", () => {
+            expect(modify_words("co,,,to")).toBe("co,,, to");
         });
     });
 
@@ -92,6 +114,24 @@ describe("modifying words", () => {
 
         test("space after decimal", () => {
             expect(modify_words("1.0version")).toBe("1.0 version");
+        });
+    });
+
+    describe("dictionary", () => {
+        test("dictionary abbreviation", () => {
+            expect(modify_words("atd", link_text, dictionary)).toBe("a tak dále");
+        });
+
+        test("dictionary slang", () => {
+            expect(modify_words("jj", link_text, dictionary)).toBe("jojo");
+        });
+
+        test("dictionary better pronounciation", () => {
+            expect(modify_words("vysere", link_text, dictionary)).toBe("vy sere");
+        });
+
+        test("dictionary missing accent characters", () => {
+            expect(modify_words("afrikac", link_text, dictionary)).toBe("afrikáč");
         });
     });
 });
