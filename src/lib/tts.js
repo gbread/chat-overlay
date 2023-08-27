@@ -267,6 +267,24 @@ export function modify_words(message, link_text, dictionary) {
                 const found = dictionary[message_fragment];
                 if (found) {
                     message_fragment = found;
+                } else {
+                    // Try to find word in dictionary after removing punctuations. Then put the punctuations found back to message fragment.
+                    const starting_punctuations = message_fragment.match(/^[.?!,]+/);
+                    const ending_punctuations = message_fragment.match(/[.?!,]+$/);
+                    const message_fragment_without_punctuations = message_fragment.replace(/[.?!,]+/g, "");
+                    if (Array.isArray(starting_punctuations)) {
+                        const found = dictionary[message_fragment_without_punctuations];
+                        if (found) {
+                            // Put punctuations back at start of message fragment.
+                            message_fragment = `${starting_punctuations.join("")}${found}`;
+                        }
+                    } else if (Array.isArray(ending_punctuations)) {
+                        const found = dictionary[message_fragment_without_punctuations];
+                        if (found) {
+                            // Put punctuations back at end of message fragment.
+                            message_fragment = `${found}${ending_punctuations.join("")}`;
+                        }
+                    }
                 }
             }
 
