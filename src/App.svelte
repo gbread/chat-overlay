@@ -108,6 +108,16 @@
 
 <main class="container-fluid">
     <Route path="/">
+        <h1>
+            Twitch chat
+
+            {#if ($settings_db.data.use_tts)}
+                TTS
+            {/if}
+
+            overlay
+        </h1>
+
         <button class="btn-small" on:click={() => show_settings = !show_settings}>
             {#if (show_settings)}
                 Hide settings
