@@ -241,8 +241,7 @@ export function modify_words(message, link_text, dictionary) {
 
     let message_fragments = message.split(/\s/gi)
         .map((word) => (is_url(word)) ? link_text : word)
-        .map((word) => (settings_data.use_more_ones_as_eleven_taunts && word.match(/^1{4,}$/)) ? "111" : word)
-        .map((word) => (use_long_number_text && word.match(/\d{5,}/)) ? long_number_text : word)
+        .map((word) => (settings_data.use_more_ones_as_eleven_taunts && word.match(/^1{4,}$/)) ? "11" : (use_long_number_text && word.match(/\d{5,}/)) ? long_number_text : word)
         .join(" ")
         .trim();
     console.log("message_fragments before:", message_fragments);
