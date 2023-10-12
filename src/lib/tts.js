@@ -90,7 +90,7 @@ audio.addEventListener("error", async (error) => {
 
 // Audio queue.
 const audio_queue = fastq.promise(async (task_item) => {
-    const {"badge-info": badge_info, badges, color, "custom-reward-id": custom_reward_id, "emote-only": is_emote_only, emotes, id: message_id, is_aoe_taunt, aoe_taunt, say_name, "user-id": user_id, username, "reply-parent-user-login": reply_username} = task_item;
+    const {"badge-info": badge_info, badges, color, "custom-reward-id": custom_reward_id, "emote-only": is_emote_only, emotes, id: message_id, _, aoe_taunt, say_name, "user-id": user_id, username, "reply-parent-user-login": reply_username} = task_item;
     let {message} = task_item;
 
     // Skip deleted message.
@@ -141,8 +141,15 @@ const audio_queue = fastq.promise(async (task_item) => {
         message = message.substring(reply_username.length + 2);
     }
 
-    let new_message = modify_words(message.toLowerCase(), link_text, dictionaries[settings_data.tts_language.toLowerCase()]);
+    message = modify_words(message.toLowerCase(), link_text, dictionaries[settings_data.tts_language.toLowerCase()]);
+    let new_message = message;
     console.log("new_message:", new_message);
+
+    // TODO: Move/Solve
+    // Determine if message is aoe taunt.
+    const is_aoe_taunt = (settings_data.use_aoe_taunts && Number(new_message.trim()) == new_message.trim());
+    console.log("is_aoe_taunt:", is_aoe_taunt);
+
 
     // Skip empty messages.
     if (new_message.trim().length < 1) {
@@ -234,6 +241,7 @@ export function modify_words(message, link_text, dictionary) {
 
     let message_fragments = message.split(/\s/gi)
         .map((word) => (is_url(word)) ? link_text : word)
+        .map((word) => (settings_data.use_more_ones_as_eleven_taunts && word.match(/^1{4,}$/)) ? "111" : word)
         .map((word) => (use_long_number_text && word.match(/\d{5,}/)) ? long_number_text : word)
         .join(" ")
         .trim();
@@ -482,6 +490,7 @@ export function parse_message(channel, data, message, is_self) {
     });
     tts_messages.set(messages);
 
+    // TODO: Move/Solve
     // Determine if message is aoe taunt.
     const is_aoe_taunt = (settings_data.use_aoe_taunts && Number(message.trim()) == message.trim());
     console.log("is_aoe_taunt:", is_aoe_taunt);

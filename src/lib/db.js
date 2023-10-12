@@ -40,6 +40,7 @@ const settings_db_default = {
     use_long_number_text: false,
     long_number_text: "number",
     use_aoe_taunts: false,
+    use_more_ones_as_eleven_taunts: true,
     volume: 1,
     speed: 1,
     preserve_pitch: true,

@@ -165,6 +165,11 @@
             type: "boolean",
             dependant_on: "use_tts",
         },
+        use_more_ones_as_eleven_taunts: {
+            label: "Use 11 when more 1 on the row",
+            type: "boolean",
+            dependant_on: "use_aoe_taunts",
+        },
         volume: {
             label: "Volume",
             type: "range",
