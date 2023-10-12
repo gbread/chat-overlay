@@ -150,6 +150,16 @@
             type: "text",
             dependant_on: "use_tts",
         },
+        use_long_number_text: {
+            label: "Replace long numbers",
+            type: "boolean",
+            dependant_on: "use_tts",
+        },
+        long_number_text: {
+            label: "Replace long numbers with",
+            type: "text",
+            dependant_on: "use_long_number_text",
+        },
         use_aoe_taunts: {
             label: "Use AoE taunts",
             type: "boolean",

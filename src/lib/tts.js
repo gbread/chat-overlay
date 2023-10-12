@@ -229,7 +229,14 @@ audio_queue.error((error, task_item) => {
 
 export function modify_words(message, link_text, dictionary) {
     // Replace URLs with user defined link text.
-    let message_fragments = message.split(/\s/gi).map((message_fragments) => (is_url(message_fragments)) ? link_text : message_fragments).join(" ").trim();
+    const use_long_number_text = settings_data.use_long_number_text;
+    const long_number_text = settings_data.long_number_text;
+
+    let message_fragments = message.split(/\s/gi)
+        .map((word) => (is_url(word)) ? link_text : word)
+        .map((word) => (use_long_number_text && word.match(/\d{5,}/)) ? long_number_text : word)
+        .join(" ")
+        .trim();
     console.log("message_fragments before:", message_fragments);
 
     // Add space before punctuations and split message into words (only if its not before non-number and is not after another punctuation or white space).

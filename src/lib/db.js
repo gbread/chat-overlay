@@ -37,6 +37,8 @@ const settings_db_default = {
     skip_over_numbers_in_usernames: false,
     remove_mentions_at_blacklisted_users: false,
     link_text: "link",
+    use_long_number_text: false,
+    long_number_text: "number",
     use_aoe_taunts: false,
     volume: 1,
     speed: 1,
