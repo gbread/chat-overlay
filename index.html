@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="referrer" content="no-referrer">
+
+        <title>Chat overlay</title>
+
+        <!-- Load `toast` and `SvelteToast` into global scope. -->
+        <script src="https://cdn.jsdelivr.net/npm/@zerodevx/svelte-toast"></script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                new SvelteToast({
+                    target: document.querySelector("#error-toasts"),
+                    props: {
+                        options: {
+                            initial: 0,
+                            classes: ["danger"],
+                        },
+                    },
+                });
+            });
+        </script>
+
+        <script>
+            if ("obsstudio" in window) {
+                window.goatcounter = {referrer: "OBS"};
+            } else if (window?.navigator?.userAgent?.toLowerCase()?.includes("valve steam gameoverlay")) {
+                window.goatcounter = {referrer: "Steam-game-overlay"};
+            }
+        </script>
+        <script data-goatcounter="https://chat-overlay-neyl.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+      <script type="module" crossorigin src="/chat-overlay/assets/index-68f9fac7.js"></script>
+      <link rel="stylesheet" href="/chat-overlay/assets/index-2f5de1fb.css">
+    </head>
+    <body>
+        <div id="error-toasts"></div>
+        <div id="app"></div>
+        
+    </body>
+</html>
